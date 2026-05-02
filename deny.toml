@@ -1,0 +1,29 @@
+[licenses]
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "Unicode-3.0"
+]
+
+[licenses.private]
+ignore = true
+
+[[licenses.exceptions]]
+allow = ["AGPL-3.0-only"]
+name = "vcard-lib"
+
+[[licenses.exceptions]]
+allow = ["AGPL-3.0-only"]
+name = "vcard-bin"
+
+[[licenses.exceptions]]
+allow = ["AGPL-3.0-only"]
+name = "vcard-derives"
+
+[bans]
+multiple-versions = "warn"
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+
