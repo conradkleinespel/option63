@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "vcard-derives",
+    "vcard-lib",
+    "vcard-bin",
+]
+resolver = "2"
