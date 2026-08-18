@@ -7,9 +7,8 @@ use crate::param::{
 use crate::parser_internals::ParseContext;
 use crate::parser_internals::result::{ParserError, ParserOutput, ParserResult};
 use crate::parser_internals::units::{
-    parse_colon, parse_comma, parse_crlf, parse_crlf_wsp, parse_dot, parse_equals, parse_group,
-    parse_param_name, parse_param_value, parse_property_name, parse_semicolon, parse_value,
-    parse_wsp,
+    parse_colon, parse_comma, parse_dot, parse_equals, parse_group, parse_param_name,
+    parse_param_value, parse_property_name, parse_semicolon, parse_value, parse_wsp,
 };
 use crate::property_support::pref::{MAX_PREF, PropertyPref};
 use crate::property_support::{Property, TryFromProperty};
@@ -59,7 +58,7 @@ impl VCard {
     /// If VERSION is absent, defaults to VcardVersion::V21.
     /// For VcardVersion::V40, VERSION must be the second line (after BEGIN).
     pub fn parse(input: &[u8], strict: bool) -> ParserResult<'_, VCard> {
-        let version = Self::extract_version_from_input(input)?;
+        let version = Self::extract_version_from_input(input, strict)?;
         let ctx = ParseContext::new(version, strict);
 
         let mut remaining = input;
@@ -67,8 +66,8 @@ impl VCard {
         let mut total_matched_len = 0;
         let mut content_lines = Vec::new();
 
-        while let Ok(out_line) = VCardFileLine::parse(remaining) {
-            let unfolded = out_line.output().unfold().collect::<Vec<u8>>();
+        while let Ok(out_line) = VCardFileLine::parse(remaining, strict) {
+            let unfolded = out_line.output().unfold(strict).collect::<Vec<u8>>();
             let out_content_line = ContentLine::parse(&unfolded, ctx)?;
 
             let is_end = matches!(out_content_line.output().property, Property::End(_));
@@ -100,12 +99,12 @@ impl VCard {
         }
     }
 
-    fn extract_version_from_input(input: &[u8]) -> Result<Version, ParserError> {
+    fn extract_version_from_input(input: &[u8], strict: bool) -> Result<Version, ParserError> {
         let mut version_value: Option<Version> = None;
         let mut version_line_number = 0;
         let mut version_count = 0;
 
-        let lines = Self::get_lines_until_next_end_property(input);
+        let lines = Self::get_lines_until_next_end_property(input, strict);
         for (i, line_bytes) in lines.iter().enumerate() {
             if let Ok(out_name) = parse_property_name(line_bytes) {
                 let name_upper = out_name.matched().to_ascii_uppercase();
@@ -177,12 +176,12 @@ impl VCard {
         Ok(version)
     }
 
-    fn get_lines_until_next_end_property(input: &[u8]) -> Vec<Vec<u8>> {
+    fn get_lines_until_next_end_property(input: &[u8], strict: bool) -> Vec<Vec<u8>> {
         let mut remaining = input;
         let mut lines_until_next_end_property: Vec<Vec<u8>> = Vec::new();
 
-        while let Ok(out_line) = VCardFileLine::parse(remaining) {
-            let unfolded = out_line.output().unfold().collect::<Vec<u8>>();
+        while let Ok(out_line) = VCardFileLine::parse(remaining, strict) {
+            let unfolded = out_line.output().unfold(strict).collect::<Vec<u8>>();
             if let Ok(out_name) = parse_property_name(&unfolded)
                 && out_name.matched().eq_ignore_ascii_case(b"END")
             {
@@ -221,6 +220,34 @@ impl VCard {
     }
 }
 
+/// Length of a line terminator at the start of `input`.
+///
+/// Strictly this is `\r\n` (2 bytes). In lax mode a lone `\n` (1 byte) is also
+/// accepted as a terminator. Returns `None` when no terminator is present.
+fn line_end_len(input: &[u8], strict: bool) -> Option<usize> {
+    if input.len() >= 2 && &input[..2] == b"\r\n" {
+        return Some(2);
+    }
+
+    if !strict && input.first() == Some(&b'\n') {
+        return Some(1);
+    }
+
+    None
+}
+
+/// Length of a line fold at the start of `input`: a line terminator followed
+/// by a single WSP character (line unfolding).
+fn line_end_wsp_len(input: &[u8], strict: bool) -> Option<usize> {
+    let end_len = line_end_len(input, strict)?;
+
+    if let Ok(out_wsp) = parse_wsp(&input[end_len..]) {
+        Some(end_len + out_wsp.matched().len())
+    } else {
+        None
+    }
+}
+
 /// A vCard file line.
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct VCardFileLine {
@@ -235,23 +262,26 @@ impl VCardFileLine {
     /// Parse a vCard line, handling line folding as per RFC 2425/6350, Section 3.2.
     ///
     /// Line unfolding is handled by removing CRLF followed by a single WSP character.
-    fn parse(input: &[u8]) -> ParserResult<'_, VCardFileLine> {
+    ///
+    /// In non-strict mode, a lone LF is accepted as a line terminator, and a line
+    /// without a trailing terminator at EOF is returned as the final line.
+    fn parse(input: &[u8], strict: bool) -> ParserResult<'_, VCardFileLine> {
         let mut index = 0;
 
         while index < input.len() {
-            if let Ok(out_crlf) = parse_crlf(&input[index..]) {
-                match parse_wsp(out_crlf.remaining()) {
+            if let Some(end_len) = line_end_len(&input[index..], strict) {
+                match parse_wsp(&input[index + end_len..]) {
                     Ok(out_wsp) => {
-                        index += out_crlf.matched().len() + out_wsp.matched().len();
+                        index += end_len + out_wsp.matched().len();
                         continue;
                     }
                     Err(_) => {
-                        index += out_crlf.matched().len();
+                        index += end_len;
                         let line = VCardFileLine::new(input[..index].to_vec());
 
                         return Ok(ParserOutput::with_output(
                             &input[..index],
-                            out_crlf.remaining(),
+                            &input[index..],
                             line,
                         ));
                     }
@@ -261,12 +291,17 @@ impl VCardFileLine {
             index += 1;
         }
 
+        if !strict && index > 0 {
+            let line = VCardFileLine::new(input.to_vec());
+            return Ok(ParserOutput::with_output(input, &[], line));
+        }
+
         Err(ParserError::Generic)
     }
 
     /// Create an iterator that unfolds the line.
-    fn unfold(&self) -> VCardFileLineBytes {
-        VCardFileLineBytes::new(self.input.clone())
+    fn unfold(&self, strict: bool) -> VCardFileLineBytes {
+        VCardFileLineBytes::new(self.input.clone(), strict)
     }
 }
 
@@ -275,11 +310,16 @@ impl VCardFileLine {
 struct VCardFileLineBytes {
     input: Vec<u8>,
     index: usize,
+    strict: bool,
 }
 
 impl VCardFileLineBytes {
-    fn new(input: Vec<u8>) -> VCardFileLineBytes {
-        VCardFileLineBytes { input, index: 0 }
+    fn new(input: Vec<u8>, strict: bool) -> VCardFileLineBytes {
+        VCardFileLineBytes {
+            input,
+            index: 0,
+            strict,
+        }
     }
 }
 
@@ -292,12 +332,12 @@ impl Iterator for VCardFileLineBytes {
                 return None;
             }
 
-            if let Ok(out) = parse_crlf_wsp(&self.input[self.index..]) {
-                self.index += out.matched().len();
+            if let Some(fold_len) = line_end_wsp_len(&self.input[self.index..], self.strict) {
+                self.index += fold_len;
                 continue;
             }
 
-            if parse_crlf(&self.input[self.index..]).is_ok() {
+            if line_end_len(&self.input[self.index..], self.strict).is_some() {
                 return None;
             }
 
