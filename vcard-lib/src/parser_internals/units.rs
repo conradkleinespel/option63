@@ -1,16 +1,6 @@
 use crate::parser_internals::result::{ParserError, ParserOutput, ParserResult};
 use crate::parser_internals::utils::{split_at_matched, utf8_width_from_first_byte};
 
-/// Parse a CRLF followed by a single WSP character.
-pub(crate) fn parse_crlf_wsp(input: &[u8]) -> ParserResult<'_, ()> {
-    let out_crlf = parse_crlf(input)?;
-    let out_wsp = parse_wsp(out_crlf.remaining())?;
-    Ok(ParserOutput::new(
-        &input[..out_crlf.matched().len() + out_wsp.matched().len()],
-        out_wsp.remaining(),
-    ))
-}
-
 /// 1*(ALPHA / DIGIT / "-"), used by group, iana-token, and others
 fn parse_1x_alpha_digit_dash(input: &[u8]) -> ParserResult<'_, ()> {
     // Parse one or more ALPHA, DIGIT, or "-"
@@ -326,18 +316,6 @@ fn parse_cr(input: &[u8]) -> ParserResult<'_, ()> {
     }
 }
 
-/// CRLF = CR LF
-pub(crate) fn parse_crlf(input: &[u8]) -> ParserResult<'_, ()> {
-    if input.len() < 2 {
-        return Err(ParserError::Generic);
-    }
-
-    match &input[..2] {
-        b"\r\n" => split_at_matched(input, 2),
-        _ => Err(ParserError::Generic),
-    }
-}
-
 /// CTL = %x00-1F / %x7F
 #[allow(unused)]
 fn parse_ctl(input: &[u8]) -> ParserResult<'_, ()> {
@@ -388,35 +366,6 @@ fn parse_lf(input: &[u8]) -> ParserResult<'_, ()> {
         Some(b'\n') => split_at_matched(input, 1),
         _ => Err(ParserError::Generic),
     }
-}
-
-/// LWSP = *(WSP / CRLF WSP)
-/// Linear white space - matches zero or more WSP or (CRLF WSP) sequences.
-#[allow(unused)]
-fn parse_lwsp(input: &[u8]) -> ParserResult<'_, ()> {
-    let mut remaining = input;
-    loop {
-        match parse_wsp(remaining) {
-            Err(_) => match parse_crlf(remaining) {
-                Err(_) => break,
-                Ok(out_crlf) => match parse_wsp(out_crlf.remaining()) {
-                    Err(_) => break,
-                    Ok(out_wsp) => {
-                        remaining = out_wsp.remaining();
-                    }
-                },
-            },
-            Ok(out_wsp) => {
-                remaining = out_wsp.remaining();
-            }
-        }
-    }
-
-    if remaining.len() == input.len() {
-        return Err(ParserError::Generic);
-    }
-
-    split_at_matched(input, input.len() - remaining.len())
 }
 
 /// SP = %x20
