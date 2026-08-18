@@ -4,7 +4,7 @@
 
 ## Services
 
-KIT is offered with **custom development, hosting, and managed services**. If you need a tailored solution, reach out: **hi@option63.eu**
+KIT is offered with **custom development, hosting, and managed services**. If you need a tailored solution, reach out: **contact@option63.eu**
 
 ## Components
 
