@@ -1,14 +1,14 @@
-# KIT
+# option63
 
-**KIT**, short for "Keep in Touch", is a toolkit for private contact, calendar, and email sharing. Built for journalists, attorneys, high-profile individuals, and anyone who needs a high degree of privacy when sharing sensitive information.
+**option63** is a toolkit for private contact, calendar, and email sharing.
 
 ## Services
 
-KIT is offered with **custom development, hosting, and managed services**. If you need a tailored solution, reach out: **contact@option63.eu**
+**option63** is offered with **custom development, hosting, and managed services**. If you need a tailored solution, reach out: **contact@option63.eu**
 
 ## Components
 
-KIT consists of 2 main components:
+**option63** consists of 2 main components:
 - a Rust library for vCard parsing & display, within `vcard-lib/`;
 - a command line interface for common vCard operations, within `vcard-bin/`.
 
@@ -19,7 +19,7 @@ KIT consists of 2 main components:
 You'll need to have **Rust** installed on your system.
 
 ```bash
-git clone https://github.com/yourusername/kit.git && cd kit
+git clone https://github.com/yourusername/option63.git && cd option63
 cargo doc --package vcard-lib
 ```
 
@@ -30,12 +30,12 @@ Open the HTML file created by `cargo doc` to browse documentation.
 You'll need to have **Rust** installed on your system.
 
 ```bash
-git clone https://github.com/yourusername/kit.git && cd kit
+git clone https://github.com/yourusername/option63.git && cd option63
 
 # show CLI commands and options
 cargo run -- --help
 
-# validate and display a vCard as parsed by kit
+# validate and display a vCard as parsed by option63
 cargo run -- show contacts.vcf
 # keep only an allow-list of properties from a vCard
 # useful to create ad-hoc vCards to preserve the privacy of your contacts in some environments
