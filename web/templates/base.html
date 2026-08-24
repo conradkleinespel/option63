@@ -36,18 +36,24 @@
       <p class="text-sm text-gray-600 leading-relaxed">
         option63 transforms contact data at the boundary — so your devices, cloud services and AI agents only ever see what you allow.
       </p>
+      <div id="why-root"></div>
     </div>
   </div>
   <div class="border-t border-line">
-    <div class="container-wide py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+<div class="container-wide py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
       <p>© <span id="year">2026</span> option63.eu — All rights reserved.</p>
       <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-      <a href="/legal/" class="hover:text-ash transition-colors">Legal</a>
+      <div class="flex items-center gap-2">
+        <a href="/legal/" class="hover:text-ash transition-colors">Legal</a>
+        <span class="text-gray-300">·</span>
+        <a href="#" id="why-link" class="hover:text-ash transition-colors">Why "option63"?</a>
+      </div>
     </div>
   </div>
 </footer>
 
 <script type="module" src="/static/js/components/nav.js"></script>
+<script type="module" src="/static/js/components/why-option63.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>
