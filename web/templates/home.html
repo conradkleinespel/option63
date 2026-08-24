@@ -123,14 +123,14 @@ END:VCARD</pre>
   <div class="container-wide py-20 md:py-28">
     <div class="max-w-3xl mb-12">
       <h2 class="text-3xl md:text-4xl font-bold tracking-tight">
-        Two ways to use option63
+        Three ways to use option63
       </h2>
       <p class="text-lg text-gray-600 leading-relaxed mt-4">
-        A Rust library for integration and a CLI for pipelines — both RFC-compliant, memory-safe, and designed for privacy-critical workflows.
+        A Rust library for integration, a CLI for pipelines, and a CardDAV proxy — all RFC-compliant, memory-safe, and designed for privacy-critical workflows.
       </p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
+    <div class="grid md:grid-cols-3 gap-8">
       <div class="flex flex-col min-w-0 p-8 border border-line hover:border-ink hover:bg-gray-50 transition-all rounded-lg">
         <h3 class="text-2xl font-bold tracking-tight mb-3">Rust crate</h3>
         <p class="text-gray-600 leading-relaxed flex-1">
@@ -148,6 +148,13 @@ END:VCARD</pre>
         <div class="bg-ink text-paper rounded-lg p-5 font-mono text-sm mt-6 min-w-0">
           <code class="m-0 block w-full">option63 show contacts.vcf --props FN,TEL</code>
         </div>
+      </div>
+      <div class="flex flex-col min-w-0 p-8 border border-line rounded-lg relative">
+        <span class="absolute top-4 right-4 font-mono text-xs bg-ink text-paper px-2 py-1 rounded">Coming soon</span>
+        <h3 class="text-2xl font-bold tracking-tight mb-3">CardDAV proxy</h3>
+        <p class="text-gray-600 leading-relaxed flex-1">
+          Make your contacts (Google, Outlook, etc) available through a CardDAV server with filtering applied.
+        </p>
       </div>
     </div>
   </div>
