@@ -7,6 +7,7 @@ const entries = [
   { in: "src-js/components/ShadowItDemo.jsx", out: "components/shadow-it-demo" },
   { in: "src-js/components/PersonalDemo.jsx", out: "components/personal-demo" },
   { in: "src-js/components/AiDemo.jsx", out: "components/ai-demo" },
+  { in: "src-js/components/WhyOption63.jsx", out: "components/why-option63" },
 ];
 
 const options = {
