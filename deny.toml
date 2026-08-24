@@ -20,6 +20,10 @@ name = "vcard-bin"
 allow = ["AGPL-3.0-only"]
 name = "vcard-derives"
 
+[[licenses.exceptions]]
+allow = ["AGPL-3.0-only"]
+name = "web"
+
 [bans]
 multiple-versions = "warn"
 

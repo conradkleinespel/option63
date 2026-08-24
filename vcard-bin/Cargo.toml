@@ -5,7 +5,7 @@ edition = "2024"
 license = "AGPL-3.0-only"
 
 [[bin]]
-name = "kit"
+name = "option63"
 path = "src/main.rs"
 
 [dependencies]
