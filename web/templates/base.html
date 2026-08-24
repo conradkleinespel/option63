@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}option63 — Keep in Touch privately{% endblock %}</title>
+  <meta name="description" content="{% block description %}option63 by OPTION63 is a privacy-focused toolkit for transforming contact data at the boundary — security, personal privacy, and AI integrations.{% endblock %}">
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col font-sans text-ink bg-paper antialiased">
+
+<header class="border-b border-line">
+  <div class="container-wide flex items-center justify-between h-16">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg tracking-tight">
+      <span class="inline-block w-6 h-6 bg-ink"></span>
+      OPTION63
+    </a>
+
+    <div id="nav-root"></div>
+  </div>
+</header>
+
+<main class="flex-1">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="border-t border-line mt-24">
+  <div class="container-wide py-12">
+    <div class="max-w-sm">
+      <div class="flex items-center gap-2 font-bold tracking-tight mb-3">
+        <span class="inline-block w-5 h-5 bg-ink"></span>
+        option63.eu
+      </div>
+      <p class="text-sm text-gray-600 leading-relaxed">
+        option63 transforms contact data at the boundary — so your devices, cloud services and AI agents only ever see what you allow.
+      </p>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="container-wide py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+      <p>© <span id="year">2026</span> option63.eu — All rights reserved.</p>
+      <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+      <a href="/legal/" class="hover:text-ash transition-colors">Legal</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="/static/js/components/nav.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

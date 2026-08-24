@@ -1,0 +1,16 @@
+/target
+/web/node_modules
+/web/static/css
+/web/static/js
+.git
+.github
+.idea
+.junie
+.private
+githooks
+*.iml
+*.vcf
+.envrc
+shell.nix
+deny.toml
+CONTRIBUTING.md

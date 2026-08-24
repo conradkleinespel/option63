@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}404 — Page not found | option63.eu{% endblock %}
+{% block description %}The page you are looking for could not be found on option63.eu.{% endblock %}
+
+{% block content %}
+<section class="border-b border-line">
+  <div class="container-wide py-24 md:py-32">
+    <div class="max-w-full">
+      <h1 class="text-7xl md:text-9xl font-bold tracking-tighter leading-[1.05] mb-6">
+        404
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-2xl mb-10">
+        The page you are looking for could not be found.
+      </p>
+      <a href="/" class="inline-flex items-center gap-2 text-lg font-medium border-b-2 border-ink pb-1 hover:gap-3 transition-all">
+        Back to home
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
