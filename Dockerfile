@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 RUN useradd --no-create-home --no-log-init --system --uid 1001 option63
 COPY --from=backend /app/target/release/option63-web /app/option63-web
 COPY web/templates /app/web/templates
+COPY web/src/assets /app/web/src/assets
 COPY --from=frontend /app/web/static /app/web/static
 RUN chown -R option63:option63 /app
 USER option63
