@@ -8,9 +8,12 @@ let
   nixScripts = builtins.filter (f: pkgs.lib.hasSuffix ".nix" f) scriptFiles;
   privateScripts = map (f: import (scriptsDir + "/${f}") {inherit pkgs;}) nixScripts;
 in
-pkgs.mkShell {
-  nativeBuildInputs = with pkgs; [
+  pkgs.mkShell {
+    nativeBuildInputs = with pkgs; [
     rustup
+    nodejs
+    gcc
+    watchexec
   ]
   ++ privateScripts;
   shellHook = ''
@@ -18,8 +21,9 @@ pkgs.mkShell {
 
     rustup default stable
     rustup component add rust-src
+    rustup component add rustfmt
+    rustup component add clippy
     rustup target add x86_64-unknown-linux-gnu
   '';
-  GIT_COMMIT_MSG_SCOPES = "lib cli devenv docs misc";
-  GIT_COMMIT_MSG_SCOPE_REQUIRED = "1";
+  GIT_COMMIT_MSG_SCOPES = "lib cli devenv docs web misc";
 }

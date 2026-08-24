@@ -3,5 +3,6 @@ members = [
     "vcard-derives",
     "vcard-lib",
     "vcard-bin",
+    "web",
 ]
 resolver = "2"

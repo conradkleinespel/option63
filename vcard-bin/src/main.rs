@@ -18,10 +18,10 @@ fn main() -> io::Result<()> {
 }
 
 fn parse_arg_matches() -> ArgMatches {
-    Command::new("kit")
+    Command::new("option63")
         .version("1.0")
         .author("Conrad Kleinespel")
-        .about("Kit helps you manage vCards")
+        .about("option63 helps you manage vCards")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}{{ description }}{% endblock %}
+
+{% block content %}
+<section class="border-b border-line">
+  <div class="container-wide py-16 md:py-20">
+    <div class="max-w-full">
+      <span class="font-mono text-xs uppercase tracking-widest text-gray-500 mb-6 block">
+        <a href="/" class="hover:text-ink transition-colors">Home</a> / {{ eyebrow }}
+      </span>
+      <h1 class="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.05] mb-6">
+        {{ hero_headline }}
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-3xl mb-10">
+        {{ hero_subhead }}
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="border-b border-line">
+  <div class="container-wide py-20 md:py-28">
+    <div class="max-w-3xl">
+      <span class="font-mono text-xs uppercase tracking-widest text-gray-400 block mb-4">The problem</span>
+      <h2 class="text-3xl font-bold tracking-tight mb-8">{{ problem_title }}</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="p-6 border border-line bg-gray-50 rounded-lg">
+          <span class="font-mono text-xs uppercase tracking-widest text-red-600 block mb-3">Before option63</span>
+          <p class="text-gray-700 leading-relaxed">{{ problem_before }}</p>
+        </div>
+        <div class="p-6 border border-ink bg-green-50 rounded-lg">
+          <span class="font-mono text-xs uppercase tracking-widest text-green-700 block mb-3">After option63</span>
+          <p class="text-gray-700 leading-relaxed">{{ problem_after }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="border-b border-line">
+  <div class="container-wide py-20 md:py-28">
+    <div class="max-w-3xl mb-10">
+      <span class="font-mono text-xs uppercase tracking-widest text-gray-400 block mb-4">Live demo</span>
+      <h2 class="text-3xl font-bold tracking-tight mb-4">{{ demo_title }}</h2>
+      <p class="text-lg text-gray-600 leading-relaxed">{{ demo_subhead }}</p>
+      <p class="text-sm text-gray-500 mt-4">
+        <strong>Demo only — uses synthetic test data, never your real contacts.</strong>
+      </p>
+    </div>
+    <div id="{{ demo_mount }}"></div>
+  </div>
+</section>
+
+<section>
+  <div class="container-wide py-20 md:py-28">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+        Need this in your environment?
+      </h2>
+      <p class="text-lg text-gray-600 leading-relaxed mb-8">
+        We build custom deployments and CardDAV or AI integrations tailored to your stack, and run or host it for you.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="mailto:contact@option63.eu" class="inline-flex items-center justify-center px-6 py-3 bg-ink text-paper font-medium hover:bg-gray-800 transition-colors">
+          {{ cta_primary }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="/{{ demo_js }}"></script>
+{% endblock %}
