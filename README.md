@@ -19,7 +19,7 @@
 You'll need to have **Rust** installed on your system.
 
 ```bash
-git clone https://github.com/yourusername/option63.git && cd option63
+git clone https://github.com/conradkleinespel/option63.git && cd option63
 cargo doc --package vcard-lib
 ```
 
@@ -30,7 +30,7 @@ Open the HTML file created by `cargo doc` to browse documentation.
 You'll need to have **Rust** installed on your system.
 
 ```bash
-git clone https://github.com/yourusername/option63.git && cd option63
+git clone https://github.com/conradkleinespel/option63.git && cd option63
 
 # show CLI commands and options
 cargo run -- --help
