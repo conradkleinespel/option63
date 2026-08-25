@@ -1,18 +1,6 @@
 # option63
 
-**option63** is a toolkit for private contact, calendar, and email sharing.
-
-## Services
-
-**option63** is offered with **custom development, hosting, and managed services**. If you need a tailored solution, reach out: **contact@option63.eu**
-
-## Components
-
-**option63** consists of 2 main components:
-- a Rust library for vCard parsing & display, within `vcard-lib/`;
-- a command line interface for common vCard operations, within `vcard-bin/`.
-
-> **Note**: This project is in its **early stages** and is **experimental**. Features as well as API interfaces will stabilize with time and feedback.
+**option63** is a toolkit for manipulating vCard data. Type-safe Rust library and CLI. More stuff coming.
 
 ## Rust library usage
 
@@ -42,8 +30,8 @@ cargo run -- show contacts.vcf
 cargo run -- show contacts.vcf --props FN,N,TEL,EMAIL
 ```
 
-## License
+## License and services
 
 This project - excluding its test suite - is licensed under the **GNU Affero General Public License v3.0 (AGPLv3)**. See the [LICENSE](LICENSE) file for details. The test suite is excluded from this license, remains private, and is not subject to AGPLv3.
 
-Custom licensing is available for this project. If you're looking for a different license that would allow you to use this package under different terms, please [reach out via email](mailto:conradk@conradk.com).
+Custom licensing is available. Looking for a different license? Need custom development, custom licensing, hosting, or managed services? [Reach out via email](mailto:contact@option63.eu).
