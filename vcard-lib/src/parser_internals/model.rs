@@ -100,7 +100,7 @@ impl VCard {
     }
 
     fn extract_version_from_input(input: &[u8], strict: bool) -> Result<Version, ParserError> {
-        let mut version_value: Option<Version> = None;
+        let mut version_str: Option<String> = None;
         let mut version_line_number = 0;
         let mut version_count = 0;
 
@@ -152,28 +152,27 @@ impl VCard {
                 if let Ok(out_colon) = parse_colon(current)
                     && let Ok(out_val) = parse_value(out_colon.remaining())
                 {
-                    version_value = match out_val.matched() {
-                        b"2.1" => Some(Version::V21),
-                        b"3.0" => Some(Version::V30),
-                        b"4.0" => Some(Version::V40),
-                        _ => None,
-                    };
+                    version_str = String::from_utf8(out_val.matched().to_vec()).ok();
                 }
             }
         }
 
-        // v3.0 and v4.0 force the presence of VERSION, v2.1 doesn't
-        let version = version_value.unwrap_or(Version::V21);
-        if version == Version::V21 {
-            return Err(ParserError::UnsupportedVersion(version));
+        if let Some(v) = version_str {
+            match v.as_str() {
+                "2.1" => Err(ParserError::UnsupportedVersion(v)),
+                "3.0" => Ok(Version::V30),
+                "4.0" => {
+                    if version_line_number != 1 {
+                        Err(ParserError::VersionNotSecondLine)
+                    } else {
+                        Ok(Version::V40)
+                    }
+                }
+                _ => Err(ParserError::UnsupportedVersion(v)),
+            }
+        } else {
+            Err(ParserError::UnsupportedVersion("2.1".to_string()))
         }
-
-        // For vCard 4.0, VERSION must be the second line per RFC
-        if version == Version::V40 && version_line_number != 1 {
-            return Err(ParserError::VersionNotSecondLine);
-        }
-
-        Ok(version)
     }
 
     fn get_lines_until_next_end_property(input: &[u8], strict: bool) -> Vec<Vec<u8>> {
