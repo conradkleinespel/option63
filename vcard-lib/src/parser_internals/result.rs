@@ -1,5 +1,3 @@
-use crate::parser_internals::version::Version;
-
 /// Errors during parsing.
 #[non_exhaustive]
 #[derive(thiserror::Error, Debug, PartialEq)]
