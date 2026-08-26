@@ -159,7 +159,7 @@ pub enum ParserError {
     InvalidVersion(#[from] crate::property::VersionError),
     /// Unsupported VERSION value.
     #[error("unsupported vCard version: {0}")]
-    UnsupportedVersion(Version),
+    UnsupportedVersion(String),
     /// Multiple VERSION properties found.
     #[error("multiple VERSION properties found")]
     MultipleVersion,
