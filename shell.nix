@@ -26,4 +26,5 @@ in
     rustup target add x86_64-unknown-linux-gnu
   '';
   GIT_COMMIT_MSG_SCOPES = "lib cli devenv docs web misc";
+  GIT_COMMIT_MSG_SCOPE_REQUIRED = "1";
 }
