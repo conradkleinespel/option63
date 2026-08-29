@@ -1,9 +1,9 @@
 [package]
-name = "vcard-lib"
+name = "o63"
 version = "0.1.0"
 edition = "2024"
 license = "AGPL-3.0-only"
 
 [dependencies]
 thiserror = "2.0.18"
-vcard-derives = { path = "../vcard-derives" }
+o63_derive = { path = "../derive" }

@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "vcard-derives",
-    "vcard-lib",
-    "vcard-bin",
-    "web",
+    "components/derive",
+    "components/lib",
+    "components/cli",
+    "components/web",
 ]
 resolver = "2"

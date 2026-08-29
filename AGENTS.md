@@ -2,9 +2,9 @@
 
 ## Components
 
-- vCard Rust library lives in `./vcard-lib/`;
-- vCard CLI built with Rust lives in `./vcard-bin`;
-- Website hosted at option63.eu lives in `./web/`.
+- vCard Rust library lives in `./components/lib/`;
+- vCard CLI built with Rust lives in `./components/cli/`;
+- Website hosted at option63.eu lives in `./components/web/`.
 
 ## Tool calls
 
