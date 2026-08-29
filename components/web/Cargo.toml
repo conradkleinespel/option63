@@ -10,11 +10,11 @@ path = "src/main.rs"
 
 [dependencies]
 actix-web = "4"
-actix-files = "0.6"
-askama = "0.12"
+actix-files = "0.7"
+askama = "0.16"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 o63 = { path = "../lib" }
 
 [build-dependencies]
-askama = "0.12"
+askama = "0.16"

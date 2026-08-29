@@ -11,4 +11,4 @@ path = "src/main.rs"
 [dependencies]
 o63 = { path = "../lib" }
 clap = { version = "4.0", features = ["derive"] }
-regex = "1.12.3"
+regex = "1"
