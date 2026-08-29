@@ -1,7 +1,7 @@
 /target
-/web/node_modules
-/web/static/css
-/web/static/js
+/components/web/node_modules
+/components/web/static/css
+/components/web/static/js
 .git
 .github
 .idea

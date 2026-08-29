@@ -12,19 +12,19 @@ ignore = true
 
 [[licenses.exceptions]]
 allow = ["AGPL-3.0-only"]
-name = "vcard-lib"
+name = "o63"
 
 [[licenses.exceptions]]
 allow = ["AGPL-3.0-only"]
-name = "vcard-bin"
+name = "o63_cli"
 
 [[licenses.exceptions]]
 allow = ["AGPL-3.0-only"]
-name = "vcard-derives"
+name = "o63_derive"
 
 [[licenses.exceptions]]
 allow = ["AGPL-3.0-only"]
-name = "web"
+name = "o63_web"
 
 [bans]
 multiple-versions = "warn"

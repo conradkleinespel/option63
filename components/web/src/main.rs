@@ -14,7 +14,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(from_fn(redirect::apex_to_www))
-            .service(Files::new("/static", "./web/static").prefer_utf8(true))
+            .service(Files::new("/static", "./components/web/static").prefer_utf8(true))
             .configure(routes::configure)
     })
     .bind(("0.0.0.0", PORT))?
