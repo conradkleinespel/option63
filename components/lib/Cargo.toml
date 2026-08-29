@@ -5,5 +5,5 @@ edition = "2024"
 license = "AGPL-3.0-only"
 
 [dependencies]
-thiserror = "2.0.18"
+thiserror = "2.0"
 o63_derive = { path = "../derive" }
