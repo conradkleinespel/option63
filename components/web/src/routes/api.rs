@@ -1,6 +1,6 @@
 use actix_web::{HttpResponse, post, web};
+use o63::VCard;
 use serde::{Deserialize, Serialize};
-use vcard_lib::VCard;
 
 #[derive(Deserialize)]
 pub struct ParseRequest {

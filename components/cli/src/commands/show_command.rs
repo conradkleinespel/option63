@@ -1,8 +1,8 @@
 use crate::trim_whitespace;
 use clap::ArgMatches;
+use o63::VCard;
 use std::fs;
 use std::io::{Error, Read};
-use vcard_lib::VCard;
 
 pub fn handle_show_command(arg_matches: &ArgMatches) -> Result<(), Error> {
     let file_path = arg_matches.get_one::<String>("file").unwrap();

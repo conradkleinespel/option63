@@ -1,9 +1,9 @@
 use clap::ArgMatches;
+use o63::VCard;
+use o63::is_valid_property_name;
 use regex::Regex;
 use std::fs::File;
 use std::io::{Error, Read, Write};
-use vcard_lib::VCard;
-use vcard_lib::is_valid_property_name;
 
 pub fn handle_remove_property_command(arg_matches: &ArgMatches) -> Result<(), Error> {
     let file_path = arg_matches.get_one::<String>("file").unwrap();

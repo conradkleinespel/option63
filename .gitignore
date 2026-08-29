@@ -4,8 +4,8 @@
 /*.vcf
 
 # web build artifacts
-/web/static/
-/web/node_modules/
+/components/web/static/
+/components/web/node_modules/
 
 # local conf override
 /opencode.json
