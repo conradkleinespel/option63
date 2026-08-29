@@ -14,10 +14,15 @@ in
     nodejs
     gcc
     watchexec
+    detect-secrets
   ]
   ++ privateScripts;
   shellHook = ''
     git config set core.hooksPath githooks
+
+    set -a
+    . .env
+    set +a
 
     rustup default stable
     rustup component add rust-src
