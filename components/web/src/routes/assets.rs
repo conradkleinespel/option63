@@ -50,7 +50,7 @@ pub async fn catch_all(tail: Path<String>) -> Result<PageResponse, Error> {
     let safe_path = sanitize_path(&raw_path)
         .ok_or_else(|| actix_web::error::ErrorBadRequest("Invalid path"))?;
 
-    let file_path = format!("./web/src/assets/{}", safe_path);
+    let file_path = format!("./components/web/src/assets/{}", safe_path);
 
     if !StdPath::new(&file_path).exists() {
         return Ok(PageResponse::NotFound);

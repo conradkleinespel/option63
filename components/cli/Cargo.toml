@@ -1,14 +1,14 @@
 [package]
-name = "vcard-bin"
+name = "o63_cli"
 version = "0.1.0"
 edition = "2024"
 license = "AGPL-3.0-only"
 
 [[bin]]
-name = "option63"
+name = "o63"
 path = "src/main.rs"
 
 [dependencies]
-vcard-lib = { path = "../vcard-lib" }
+o63 = { path = "../lib" }
 clap = { version = "4.0", features = ["derive"] }
 regex = "1.12.3"
