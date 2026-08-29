@@ -271,7 +271,7 @@ fn value_is_valid(input: &[u8]) -> bool {
 
         let b2 = input[i];
         // Per RFC, these are the only chars that can be escaped in property values
-        if ![b'\\', b'n', b'N', b',', b';'].contains(&b2) {
+        if !b"\\nN,;".contains(&b2) {
             return false;
         }
 
