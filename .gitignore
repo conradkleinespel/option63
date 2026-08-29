@@ -1,11 +1,18 @@
-/target
+# dev tooling
 /.idea/
 /*.iml
+
+# dev environment
+.env*
+!.envrc
+
+# test files
 /*.vcf
 
-# web build artifacts
+# build artifacts
+/target
 /components/web/static/
 /components/web/node_modules/
 
 # local conf override
-/opencode.json
+opencode.json
