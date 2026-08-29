@@ -22,7 +22,7 @@ fn sanitize_path(path: &str) -> Option<String> {
 }
 
 pub enum PageResponse {
-    File(NamedFile),
+    File(Box<NamedFile>),
     NotFound,
 }
 
@@ -57,5 +57,5 @@ pub async fn catch_all(tail: Path<String>) -> Result<PageResponse, Error> {
     }
 
     let file = NamedFile::open(&file_path).map_err(actix_web::error::ErrorInternalServerError)?;
-    Ok(PageResponse::File(file))
+    Ok(PageResponse::File(Box::new(file)))
 }
