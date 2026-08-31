@@ -8,10 +8,13 @@
 
 ## Tool calls
 
-- Run all Rust and NPM commands through `nix-shell`.
+- Run all Rust and NPM commands through `nix-shell --run "command here"`.
 
 ## Code
 
+- When creating functions with side-effects:
+  - Delegate the logic to pure functions to keep things testable.
+  - Use traits to make mocking easier for side-effects.
 - New features must be made with corresponding tests. No need to test logging.
 - Bug fixes must be made with corresponding tests.
 - Do not implement things that are not explicitly requested.
