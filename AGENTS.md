@@ -1,5 +1,10 @@
 # AGENTS.md
 
+## General agent behavior
+
+- Respond with maximum brevity, eliminating conversational filler, and polite closings to conserve context tokens.
+- Create temporary files in the current working directory. Do not use `/tmp`.
+
 ## Components
 
 - vCard Rust library lives in `./components/lib/`;
