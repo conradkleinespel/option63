@@ -1,6 +1,6 @@
 use crate::trim_whitespace;
 use clap::ArgMatches;
-use o63::VCard;
+use o63::vcard::VCard;
 use std::fs;
 use std::io::{Error, Read};
 
@@ -23,8 +23,8 @@ pub fn handle_show_command(arg_matches: &ArgMatches) -> Result<(), Error> {
             break;
         }
         match VCard::parse(remaining, strict) {
-            Ok(out_vcard) => {
-                for content_line in out_vcard.output().content_lines() {
+            Ok((new_remaining, out_vcard)) => {
+                for content_line in out_vcard.content_lines() {
                     let prop_name =
                         String::from_utf8_lossy(content_line.property().name().as_slice())
                             .to_ascii_uppercase();
@@ -46,7 +46,7 @@ pub fn handle_show_command(arg_matches: &ArgMatches) -> Result<(), Error> {
                         );
                     }
                 }
-                remaining = out_vcard.remaining();
+                remaining = new_remaining;
             }
             Err(err) => {
                 println!("failed to parse vcard: {:?}", err,);

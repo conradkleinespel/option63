@@ -12,3 +12,17 @@ path = "src/main.rs"
 o63 = { path = "../lib" }
 clap = { version = "4.0", features = ["derive"] }
 regex = "1"
+actix-web = "4"
+reqwest = { version = "0.13", default-features = false, features = ["http2", "rustls"] }
+thiserror = "2"
+serde_json = "1"
+quick-xml = "0.42"
+base64 = "0.23"
+rpassword = "7"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+uuid = { version = "1", features = ["v4"] }
+nom = "8"
+
+[dev-dependencies]
+tempfile = "3"
