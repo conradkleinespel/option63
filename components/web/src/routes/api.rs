@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse, post, web};
-use o63::VCard;
+use o63::vcard::VCard;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -41,8 +41,8 @@ pub async fn parse_vcard(req: web::Json<ParseRequest>) -> HttpResponse {
         }
 
         match VCard::parse(remaining, false) {
-            Ok(out_vcard) => {
-                for content_line in out_vcard.output().content_lines() {
+            Ok((new_remaining, out_vcard)) => {
+                for content_line in out_vcard.content_lines() {
                     let prop_name =
                         String::from_utf8_lossy(content_line.property().name().as_slice())
                             .to_ascii_uppercase();
@@ -66,7 +66,7 @@ pub async fn parse_vcard(req: web::Json<ParseRequest>) -> HttpResponse {
                         });
                     }
                 }
-                remaining = out_vcard.remaining();
+                remaining = new_remaining;
             }
             Err(err) => {
                 return HttpResponse::BadRequest().json(ErrorResponse {

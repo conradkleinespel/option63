@@ -6,4 +6,5 @@ license = "AGPL-3.0-only"
 
 [dependencies]
 thiserror = "2.0"
+nom = "8"
 o63_derive = { path = "../derive" }
