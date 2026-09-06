@@ -1,6 +1,5 @@
 use clap::ArgMatches;
-use o63::VCard;
-use o63::is_valid_property_name;
+use o63::vcard::VCard;
 use regex::Regex;
 use std::fs::File;
 use std::io::{Error, Read, Write};
@@ -48,8 +47,8 @@ pub fn handle_remove_property_command(arg_matches: &ArgMatches) -> Result<(), Er
             break;
         }
         match VCard::parse(remaining, false) {
-            Ok(out_vcard) => {
-                for content_line in out_vcard.output().content_lines() {
+            Ok((new_remaining, out_vcard)) => {
+                for content_line in out_vcard.content_lines() {
                     let prop_name =
                         String::from_utf8_lossy(content_line.property().name().as_slice())
                             .to_ascii_uppercase();
@@ -74,7 +73,7 @@ pub fn handle_remove_property_command(arg_matches: &ArgMatches) -> Result<(), Er
                         )?;
                     }
                 }
-                remaining = out_vcard.remaining();
+                remaining = new_remaining;
             }
             Err(err) => {
                 eprintln!("failed to parse vcard: {:?}", err);
@@ -91,4 +90,57 @@ pub fn handle_remove_property_command(arg_matches: &ArgMatches) -> Result<(), Er
     }
 
     Ok(())
+}
+
+fn is_valid_property_name(field: &str) -> bool {
+    let field_upper = field.to_ascii_uppercase();
+    let bytes = field_upper.as_bytes();
+
+    if bytes.starts_with(b"X-") {
+        return true;
+    }
+
+    // TODO: Need to support IANA properties (generic IANA tokens)
+
+    matches!(
+        field_upper.as_str(),
+        "ADR"
+            | "ANNIVERSARY"
+            | "BDAY"
+            | "BEGIN"
+            | "CALADRURI"
+            | "CALURI"
+            | "CATEGORIES"
+            | "CLIENTPIDMAP"
+            | "EMAIL"
+            | "END"
+            | "FBURL"
+            | "FN"
+            | "GENDER"
+            | "GEO"
+            | "IMPP"
+            | "KEY"
+            | "KIND"
+            | "LANG"
+            | "LOGO"
+            | "MEMBER"
+            | "NICKNAME"
+            | "NOTE"
+            | "N"
+            | "ORG"
+            | "PHOTO"
+            | "PRODID"
+            | "RELATED"
+            | "REV"
+            | "ROLE"
+            | "SOUND"
+            | "SOURCE"
+            | "TEL"
+            | "TITLE"
+            | "TZ"
+            | "UID"
+            | "URL"
+            | "VERSION"
+            | "XML"
+    )
 }
