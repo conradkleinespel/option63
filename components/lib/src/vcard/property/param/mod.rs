@@ -91,8 +91,8 @@ impl Param {
                 .map(|v| match v {
                     TypeParamValue::Work => b"work".to_vec(),
                     TypeParamValue::Home => b"home".to_vec(),
-                    TypeParamValue::IanaToken(v) => v.to_ascii_lowercase().clone(),
-                    TypeParamValue::XName(v) => v.to_ascii_lowercase().clone(),
+                    TypeParamValue::IanaToken(v) => v.clone(),
+                    TypeParamValue::XName(v) => v.clone(),
                 })
                 .collect(),
             Param::Mediatype(p) => vec![p.raw().to_vec()],
