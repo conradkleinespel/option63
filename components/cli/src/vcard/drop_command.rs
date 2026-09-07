@@ -26,7 +26,8 @@ pub fn handle_drop_command(arg_matches: &ArgMatches) -> Result<(), CliError> {
     };
 
     let content = read_input(&input)?;
-    let rendered = render_drop(&content, field, regex.as_ref())?;
+    let strict = arg_matches.get_flag("strict");
+    let rendered = render_drop(&content, field, regex.as_ref(), strict)?;
     let output = resolve_output(arg_matches.get_one::<String>("output").map(String::as_str));
     write_output(&output, &rendered)?;
     Ok(())
@@ -36,6 +37,7 @@ pub fn render_drop(
     content: &[u8],
     field: &str,
     regex: Option<&Regex>,
+    strict: bool,
 ) -> Result<Vec<u8>, CliError> {
     let field_upper = field.to_ascii_uppercase();
     let mut output = Vec::new();
@@ -45,7 +47,7 @@ pub fn render_drop(
         if crate::trim_whitespace(remaining).is_empty() {
             break;
         }
-        let (new_remaining, out_vcard) = VCard::parse(remaining, false)?;
+        let (new_remaining, out_vcard) = VCard::parse(remaining, strict)?;
         for content_line in out_vcard.content_lines() {
             let prop_name = String::from_utf8_lossy(content_line.property().name().as_slice())
                 .to_ascii_uppercase();

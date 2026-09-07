@@ -107,6 +107,14 @@ fn parse_arg_matches() -> ArgMatches {
                                 .required(false),
                         )
                         .arg(
+                            Arg::new("strict")
+                                .short('s')
+                                .long("strict")
+                                .help("Enable strict RFC parsing mode")
+                                .required(false)
+                                .action(clap::ArgAction::SetTrue),
+                        )
+                        .arg(
                             Arg::new("output")
                                 .long("output")
                                 .help("Output file path, or '-' for stdout (default)")
