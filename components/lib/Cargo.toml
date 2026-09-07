@@ -1,9 +1,12 @@
 [package]
 name = "o63"
 description = "Toolkit for type-safe parsing and editing of vCards."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "AGPL-3.0-only"
+homepage = "https://option63.eu"
+repository = "https://github.com/conradkleinespel/option63"
+keywords = ["vcard", "carddav", "o63", "option63"]
 
 [dependencies]
 thiserror = "2.0"
