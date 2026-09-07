@@ -95,7 +95,7 @@ impl Param {
                     TypeParamValue::XName(v) => v.to_ascii_lowercase().clone(),
                 })
                 .collect(),
-            Param::Mediatype(_) => vec![], // FIXME
+            Param::Mediatype(p) => vec![p.raw().to_vec()],
             Param::SortAs(p) => p.values().to_vec(),
             Param::Geo(p) => vec![p.uri().to_vec()],
             Param::Tz(p) => vec![p.value().to_vec()],
