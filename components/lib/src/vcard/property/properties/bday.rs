@@ -25,6 +25,8 @@ pub enum BdayError {
     InvalidValueParam,
     #[error("unsupported vCard version for bday")]
     UnsupportedVersion,
+    #[error("bday date/time component out of bounds")]
+    OutOfBounds,
     #[error("property value parse error")]
     InvalidPropertyValue(#[from] PropertyValueParseError),
 }
@@ -33,6 +35,7 @@ impl From<DateAndOrTimeOrTextError> for BdayError {
     fn from(e: DateAndOrTimeOrTextError) -> Self {
         match e {
             DateAndOrTimeOrTextError::InvalidFormat => BdayError::InvalidFormat,
+            DateAndOrTimeOrTextError::OutOfBounds => BdayError::OutOfBounds,
             DateAndOrTimeOrTextError::InvalidValueParam => BdayError::InvalidValueParam,
             DateAndOrTimeOrTextError::UnsupportedVersion => BdayError::UnsupportedVersion,
         }
