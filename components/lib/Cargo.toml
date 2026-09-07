@@ -1,5 +1,6 @@
 [package]
 name = "o63"
+description = "Toolkit for type-safe parsing and editing of vCards."
 version = "0.1.0"
 edition = "2024"
 license = "AGPL-3.0-only"
