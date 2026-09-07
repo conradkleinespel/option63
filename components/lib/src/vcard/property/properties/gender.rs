@@ -81,11 +81,10 @@ impl GenderProperty {
             .unwrap_or(vec![]);
         let sex = if sex_part.is_empty() {
             Sex::Empty
+        } else if sex_part.len() != 1 {
+            return Err(GenderError::InvalidSex);
         } else {
-            match sex_part.as_slice().iter().next() {
-                Some(c) => Sex::from_char(*c).ok_or(GenderError::InvalidSex)?,
-                None => Sex::Empty,
-            }
+            Sex::from_char(sex_part[0]).ok_or(GenderError::InvalidSex)?
         };
 
         let identity = values.get(1).map(|v| v.as_slice().to_vec());
