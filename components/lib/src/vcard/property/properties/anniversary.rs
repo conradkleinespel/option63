@@ -22,6 +22,8 @@ pub enum AnniversaryError {
     InvalidValueParam,
     #[error("unsupported vCard version for anniversary")]
     UnsupportedVersion,
+    #[error("anniversary date/time component out of bounds")]
+    OutOfBounds,
     #[error("property value parse error")]
     InvalidPropertyValue(#[from] PropertyValueParseError),
 }
@@ -30,6 +32,7 @@ impl From<DateAndOrTimeOrTextError> for AnniversaryError {
     fn from(e: DateAndOrTimeOrTextError) -> Self {
         match e {
             DateAndOrTimeOrTextError::InvalidFormat => AnniversaryError::InvalidFormat,
+            DateAndOrTimeOrTextError::OutOfBounds => AnniversaryError::OutOfBounds,
             DateAndOrTimeOrTextError::InvalidValueParam => AnniversaryError::InvalidValueParam,
             DateAndOrTimeOrTextError::UnsupportedVersion => AnniversaryError::UnsupportedVersion,
         }
