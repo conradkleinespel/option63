@@ -24,10 +24,19 @@ git clone https://github.com/conradkleinespel/option63.git && cd option63
 cargo run -- --help
 
 # validate and display a vCard as parsed by option63
-cargo run -- show contacts.vcf
+cargo run -- vcard show contacts.vcf
 # keep only an allow-list of properties from a vCard
 # useful to create ad-hoc vCards to preserve the privacy of your contacts in some environments
-cargo run -- show contacts.vcf --props FN,N,TEL,EMAIL
+cargo run -- vcard show contacts.vcf --props FN,N,TEL,EMAIL
+# drop a property (optionally only where the value matches a regex)
+cargo run -- vcard drop contacts.vcf TEL
+# drop TEL properties whose value matches an area code, e.g. +1 555 area code
+cargo run -- vcard drop contacts.vcf TEL --regex '^\+1-555'
+
+# print base64-encoded upstream credentials as O63_CARDDAV_PROXY_* variables
+cargo run -- carddav creds
+# run a CardDAV reverse proxy forwarding traffic to an upstream server
+cargo run -- carddav proxy --upstream https://dav.example.com
 ```
 
 ## License and services
