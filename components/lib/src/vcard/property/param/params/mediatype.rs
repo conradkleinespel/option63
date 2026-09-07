@@ -1,23 +1,64 @@
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
-use std::collections::HashMap;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MediatypeParam {
-    type_name: Vec<u8>,
-    subtype_name: Vec<u8>,
-    attributes: Vec<HashMap<Vec<u8>, Vec<u8>>>,
+    raw: Vec<u8>,
+}
+
+impl MediatypeParam {
+    fn validate(raw: &[u8]) -> Result<(), ParseError> {
+        // mediatype = type-name "/" subtype-name *( *WSP ";" *WSP mediatype-param )
+        let Some(slash) = raw.iter().position(|b| b == &b'/') else {
+            return Err(ParseError::ParamValue);
+        };
+        let type_name = &raw[..slash];
+        let rest = &raw[slash + 1..];
+
+        if type_name.is_empty() || rest.is_empty() {
+            return Err(ParseError::ParamValue);
+        }
+
+        let (subtype_name, parameters) = match rest.iter().position(|b| b == &b';') {
+            Some(semi) => (&rest[..semi], &rest[semi + 1..]),
+            None => (rest, &rest[rest.len()..]),
+        };
+
+        if subtype_name.is_empty()
+            || !type_name
+                .iter()
+                .chain(subtype_name.iter())
+                .all(|b| is_type_name_byte(*b))
+            || subtype_name.contains(&b'/')
+        {
+            return Err(ParseError::ParamValue);
+        }
+
+        // TODO: validate individual mediatype-params after the first ";".
+        let _ = parameters;
+
+        Ok(())
+    }
+}
+
+fn is_type_name_byte(b: u8) -> bool {
+    b.is_ascii_alphanumeric()
+        || matches!(
+            b,
+            b'!' | b'#' | b'$' | b'&' | b'-' | b'^' | b'_' | b'.' | b'+'
+        )
 }
 
 impl ParamTrait for MediatypeParam {
     fn parse(values: Vec<Vec<u8>>) -> Result<Self, ParseError> {
-        // Simplified for now, just take the first value as a placeholder
-        // Real implementation would need to parse the mediatype string
-        let _value = values.first().ok_or(ParseError::ParamValue)?;
-        Ok(MediatypeParam {
-            type_name: Vec::new(),
-            subtype_name: Vec::new(),
-            attributes: Vec::new(),
-        })
+        let raw = values.first().ok_or(ParseError::ParamValue)?;
+        Self::validate(raw)?;
+        Ok(MediatypeParam { raw: raw.clone() })
+    }
+}
+
+impl MediatypeParam {
+    pub fn raw(&self) -> &[u8] {
+        &self.raw
     }
 }
