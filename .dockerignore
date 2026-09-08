@@ -11,6 +11,7 @@ githooks
 *.iml
 *.vcf
 .envrc
+.env
 shell.nix
 deny.toml
 CONTRIBUTING.md
