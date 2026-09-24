@@ -12,12 +12,12 @@ pub fn summaries() -> Vec<SegmentSummary> {
         SegmentSummary {
             href: "/shadow-it/",
             headline: "Shadow-IT",
-            description: "Employees may try to sync to unvetted tools no matter what. option63 strips sensitive fields at the boundary — so those tools only ever see a limited, low-risk subset.",
+            description: "Employees may try to sync to unvetted tools no matter what. option63 strips sensitive fields at the boundary - so those tools only ever see a limited, low-risk subset.",
         },
         SegmentSummary {
             href: "/personal/",
             headline: "Personal Privacy",
-            description: "Keep sensitive relationships private without losing convenience — redact names, addresses, and notes before they ever sync to the cloud or a low-trust device.",
+            description: "Keep sensitive relationships private without losing convenience - redact names, addresses, and notes before they ever sync to the cloud or a low-trust device.",
         },
         SegmentSummary {
             href: "/ai/",
@@ -48,14 +48,14 @@ struct SegmentPageTemplate<'a> {
 #[get("/shadow-it/")]
 pub async fn it() -> HttpResponse {
     render_segment(SegmentCopy {
-        title: "IT Security — option63 | option63.eu",
+        title: "IT Security - option63 | option63.eu",
         description: "Limit what unvetted sync tools can expose. option63 strips sensitive contact fields at the boundary so shadow-IT carries far less risk to the company.",
         eyebrow: "IT Security",
         hero_headline: "De-risk shadow-IT",
-        hero_subhead: "Employees may try to install unvetted sync tools, no matter what policy you write. option63 gives them a convenient and safe-ish alternative: by stripping sensitive fields before data reaches unvetted devices and apps, any tool they use — official or not — only ever sees a limited, low-risk subset.",
+        hero_subhead: "Employees may try to install unvetted sync tools, no matter what policy you write. option63 gives them a convenient and safe-ish alternative: by stripping sensitive fields before data reaches unvetted devices and apps, any tool they use - official or not - only ever sees a limited, low-risk subset.",
         problem_title: "The compliance gap",
-        problem_before: "An employee syncs corporate contacts to a personal device or third-party app. The full vCard goes over — NOTE fields with client details, personal EMAIL/ADR, internal metadata. When an unvetted tool leaks, so does all of it.",
-        problem_after: "option63 applies a property allow-list at the boundary. Whatever tool an employee uses only receives FN and TEL — never NOTE, ADR, EMAIL, or custom fields. If that tool leaks, there's nothing sensitive left for the company to lose.",
+        problem_before: "An employee syncs corporate contacts to a personal device or third-party app. The full vCard goes over - NOTE fields with client details, personal EMAIL/ADR, internal metadata. When an unvetted tool leaks, so does all of it.",
+        problem_after: "option63 applies a property allow-list at the boundary. Whatever tool an employee uses only receives FN and TEL - never NOTE, ADR, EMAIL, or custom fields. If that tool leaks, there's nothing sensitive left for the company to lose.",
         demo_title: "See the transform live",
         demo_subhead: "Pulling a synthetic corporate CardDAV address book and applying the option63 property filter in your browser.",
         demo_mount: "shadow-it-demo",
@@ -67,14 +67,14 @@ pub async fn it() -> HttpResponse {
 #[get("/personal/")]
 pub async fn personal() -> HttpResponse {
     render_segment(SegmentCopy {
-        title: "Personal Privacy — option63 | option63.eu",
+        title: "Personal Privacy - option63 | option63.eu",
         description: "Take control of your own contact data and keep sensitive relationships private without losing convenience.",
         eyebrow: "Personal Privacy",
         hero_headline: "Your address book, on your terms",
-        hero_subhead: "Cloud contacts may expose who you know and what you're dealing with. option63 transforms your own vCards before they ever sync — initials instead of full names, relayed emails instead of real addresses, redacted notes.",
+        hero_subhead: "Cloud contacts may expose who you know and what you're dealing with. option63 transforms your own vCards before they ever sync - initials instead of full names, relayed emails instead of real addresses, redacted notes.",
         problem_title: "What your cloud learns about you",
         problem_before: "Your personal contacts sync to the cloud and AI agents in full: real names, personal email addresses, private notes about family, doctors, and sensitive relationships. A compromised account exposes all of it.",
-        problem_after: "option63 rewrites the export: initials instead of a full name, no private EMAIL or ADR, notes removed. You still call and email the way you always have — but the metadata trail no longer points anywhere.",
+        problem_after: "option63 rewrites the export: initials instead of a full name, no private EMAIL or ADR, notes removed. You still call and email the way you always have - but the metadata trail no longer points anywhere.",
         demo_title: "See the transform live",
         demo_subhead: "Pulling a synthetic personal address book and applying option63 pseudonymization and stripping in your browser.",
         demo_mount: "personal-demo",
@@ -86,13 +86,13 @@ pub async fn personal() -> HttpResponse {
 #[get("/ai/")]
 pub async fn ai_integrator() -> HttpResponse {
     render_segment(SegmentCopy {
-        title: "AI Integrations — option63 | option63.eu",
-        description: "Wire AI into your systems without handing it everything — strip and redact data at the boundary before ingestion.",
+        title: "AI Integrations - option63 | option63.eu",
+        description: "Wire AI into your systems without handing it everything - strip and redact data at the boundary before ingestion.",
         eyebrow: "AI Integrations",
         hero_headline: "Connect AI without leaking the whole dataset",
-        hero_subhead: "Every connector you build to feed AI a system needs data through a boundary you can't fully trust. option63 reduces each ingested vCard to the minimum safe subset — the AI gets what it needs to work, never the raw contact store.",
+        hero_subhead: "Every connector you build to feed AI a system needs data through a boundary you can't fully trust. option63 reduces each ingested vCard to the minimum safe subset - the AI gets what it needs to work, never the raw contact store.",
         problem_title: "The ingestion boundary",
-        problem_before: "A connector exports full contact records — names, personal emails, notes, addresses — straight into an AI service you don't control. Training data, logs, and retention policies are now out of your hands.",
+        problem_before: "A connector exports full contact records - names, personal emails, notes, addresses - straight into an AI service you don't control. Training data, logs, and retention policies are now out of your hands.",
         problem_after: "option63 sits at the ingestion point and applies an allow-list before the payload leaves. The model receives only the fields it needs for the task; identity-bearing and sensitive properties are stripped server-side.",
         demo_title: "See the transform live",
         demo_subhead: "Pulling a synthetic address book and reducing it to the minimal safe subset for AI ingestion, in your browser.",
