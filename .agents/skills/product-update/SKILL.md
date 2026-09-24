@@ -38,4 +38,4 @@ Drafts a concise user-facing changelog post for the option63-eu project vCard li
 - Do not include a link to option63.eu in the visible text. State that the relevant links will be included in a comment on the post.
 - Do not include internal build or dev-only notes.
 - In addition to the post, output the content for a comment on the post that carries the links that were excluded from the visible text, including a link to the project on GitHub (`https://github.com/conradkleinespel/option63`) and a link to the website (`https://option63.eu`). Ask the user whether any other links are relevant to include. Keep the comment short.
-- Output only the post itself followed by the comment content to the console for copy-paste — no preamble sentence, header, or closing commentary. Do not write a file. Separate the two clearly, e.g. with a divider, and label the second block as the comment.
+- Output only the post itself followed by the comment content to the console for copy-paste - no preamble sentence, header, or closing commentary. Do not write a file. Separate the two clearly, e.g. with a divider, and label the second block as the comment.
