@@ -9,7 +9,7 @@ TITLE:Account Manager
 TEL;TYPE=cell:+1-555-0142
 EMAIL:jmorgan@corp.example
 ADR;TYPE=work:;;100 Harbor Ave;Portland;OR;97201;US
-NOTE:Calls contract renewal — $240k ARR, renewal 09/15
+NOTE:Calls contract renewal - $240k ARR, renewal 09/15
 END:VCARD`;
 
 createRoot(document.getElementById("shadow-it-demo")).render(

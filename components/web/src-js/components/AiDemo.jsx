@@ -9,7 +9,7 @@ TITLE:CTO
 TEL;TYPE=cell:+1-555-0137
 EMAIL:sarah.nguyen@acme.example
 ADR;TYPE=work:;;1 Innovation Dr;Austin;TX;78701;US
-NOTE:Evaluating our product — sent NDA 06/12
+NOTE:Evaluating our product - sent NDA 06/12
 END:VCARD`;
 
 createRoot(document.getElementById("ai-demo")).render(
