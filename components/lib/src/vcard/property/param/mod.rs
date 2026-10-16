@@ -1,3 +1,5 @@
+//! vCard property parameter data model and parameter parsing logic.
+
 use crate::vcard::name;
 use crate::vcard::parser::{ParseError, R};
 use nom::Parser;

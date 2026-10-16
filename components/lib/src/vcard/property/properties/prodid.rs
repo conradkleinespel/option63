@@ -1,3 +1,5 @@
+//! PRODID property parsing for identifying the software product that created the vCard.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

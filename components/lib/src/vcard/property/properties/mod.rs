@@ -1,3 +1,5 @@
+//! Properties module root exporting typed representations for all supported vCard properties.
+
 mod adr;
 mod anniversary;
 mod bday;

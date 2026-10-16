@@ -1,3 +1,5 @@
+//! ORG property parsing for organization names and organizational units.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::param::Param;
 use crate::vcard::property::{FieldValue, PropertyBase, Value};

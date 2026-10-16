@@ -1,3 +1,5 @@
+//! BEGIN property parsing marking the start of a vCard object.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;
 use crate::vcard::property::Value;

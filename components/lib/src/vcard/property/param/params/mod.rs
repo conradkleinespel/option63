@@ -1,3 +1,5 @@
+//! Parameter module root exporting individual vCard parameter parsers and representations.
+
 mod altid;
 mod calscale;
 mod geo;

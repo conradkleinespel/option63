@@ -1,3 +1,5 @@
+//! KEY property parsing for public encryption key or authentication certificate.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

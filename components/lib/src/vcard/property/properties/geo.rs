@@ -1,3 +1,5 @@
+//! GEO property parsing for geographic position coordinates.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::param::Param;
 use crate::vcard::property::{Field, FieldValue, PropertyBase, Value};

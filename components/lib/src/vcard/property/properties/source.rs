@@ -1,3 +1,5 @@
+//! SOURCE property parsing for URLs where updated copies of the vCard can be found.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

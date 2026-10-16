@@ -1,3 +1,5 @@
+//! RELATED property parsing for relationships to other entities.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;
 use crate::vcard::property::Value;

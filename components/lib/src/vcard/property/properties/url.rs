@@ -1,3 +1,5 @@
+//! URL property parsing for website addresses.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

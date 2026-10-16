@@ -1,3 +1,5 @@
+//! END property parsing marking the end of a vCard object.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;
 use crate::vcard::property::Value;

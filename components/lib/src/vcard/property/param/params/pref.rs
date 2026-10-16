@@ -1,3 +1,5 @@
+//! PREF parameter parsing for ordering preferred property instances.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 use crate::vcard::property::{MAX_PREF, MIN_PREF};

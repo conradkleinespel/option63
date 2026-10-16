@@ -1,3 +1,5 @@
+//! CATEGORIES property parsing for categorization tags and lists.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

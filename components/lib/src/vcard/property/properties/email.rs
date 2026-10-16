@@ -1,3 +1,5 @@
+//! EMAIL property parsing and validation.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyPref;
 use crate::vcard::property::PropertyValueParseError;

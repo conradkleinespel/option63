@@ -1,3 +1,5 @@
+//! Generic property parser and representation for experimental non-standard property names.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;
 use crate::vcard::property::Value;

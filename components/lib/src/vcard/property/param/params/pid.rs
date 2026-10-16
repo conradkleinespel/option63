@@ -1,3 +1,5 @@
+//! PID parameter parsing for property instance identification and synchronization.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

@@ -1,3 +1,5 @@
+//! LOGO property parsing for organization logo graphics.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

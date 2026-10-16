@@ -1,3 +1,5 @@
+//! LABEL parameter parsing for formatted delivery address labels.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

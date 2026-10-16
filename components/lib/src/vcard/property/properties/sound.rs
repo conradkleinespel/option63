@@ -1,3 +1,5 @@
+//! SOUND property parsing for digital audio clips.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

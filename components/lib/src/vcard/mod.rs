@@ -1,3 +1,5 @@
+//! vCard document data model, serialization, and high-level parsing logic.
+
 use crate::vcard::parser::{ParseContext, ParseError, R};
 use crate::vcard::property::param::Param;
 use crate::vcard::property::{Property, TryFromProperty, VersionError};
@@ -304,6 +306,16 @@ impl VCard {
                 .unwrap_or(MAX_PREF)
                 .cmp(&b.pref().unwrap_or(MAX_PREF))
         });
+
+        props.first().copied()
+    }
+
+    pub fn get<T: TryFromProperty>(&self) -> Option<&T> {
+        let props = self
+            .content_lines
+            .iter()
+            .filter_map(|cl| T::try_from_property(&cl.property))
+            .collect::<Vec<&T>>();
 
         props.first().copied()
     }

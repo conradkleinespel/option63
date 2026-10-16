@@ -1,3 +1,5 @@
+//! CALSCALE parameter parsing for defining calendar systems in date-like properties.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

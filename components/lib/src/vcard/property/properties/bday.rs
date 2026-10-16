@@ -1,3 +1,6 @@
+//!
+//! BDAY property parsing and representation for birthdates or text.
+
 use super::BdayError::UnsupportedVersion;
 use crate::vcard::Version;
 use crate::vcard::parser::ParseContext;

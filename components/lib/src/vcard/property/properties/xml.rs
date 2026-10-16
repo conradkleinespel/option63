@@ -1,3 +1,5 @@
+//! XML property parsing for arbitrary embedded XML fragments.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;
 use crate::vcard::property::Value;

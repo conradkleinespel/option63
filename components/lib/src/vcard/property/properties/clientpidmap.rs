@@ -1,3 +1,5 @@
+//! CLIENTPIDMAP property parsing for mapping synchronization identifiers to URIs.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;
