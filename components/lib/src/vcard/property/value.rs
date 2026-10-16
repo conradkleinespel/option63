@@ -1,24 +1,26 @@
+//! Value parsing and character unescaping for vCard properties.
+//!
+//! A property's value must be parsed according to the property's schema:
+//!
+//! 1. Structural Splitting (Compounds)
+//! - If the property is compound (e.g., N, ADR), split the payload on UNESCAPED ";"
+//! - If the property is simple (e.g., NOTE), treat the whole payload as a single field.
+//! 2. Multi-value Splitting (Lists)
+//! - For each resulting field, if the schema allows multiple values,
+//!   split the field on UNESCAPED ","
+//! 3. Final Unescaping (Clean up)
+//! - For every final extracted value, apply the unescaping rules:
+//!     - replace "\;" with ";"
+//!     - replace "\," with ","
+//!     - replace "\n" and "\N" with an actual newline character
+//!     - replace "\\" with "\"
+
 use crate::vcard::parser::{ParseError, R, RE};
 use crate::vcard::property::{Field, FieldValue, PropertyValueParseError, fv};
 use nom::Parser;
 use nom::bytes::complete::{escaped, tag, take, take_while1};
 use nom::combinator::{all_consuming, opt};
 use nom::multi::{many0, separated_list0};
-
-// A property's value must be parsed according to the property's schema:
-//
-// 1. Structural Splitting (Compounds)
-// - If the property is compound (e.g., N, ADR), split the payload on UNESCAPED ";"
-// - If the property is simple (e.g., NOTE), treat the whole payload as a single field.
-// 2. Multi-value Splitting (Lists)
-// - For each resulting field, if the schema allows multiple values,
-//   split the field on UNESCAPED ","
-// 3. Final Unescaping (Clean up)
-// - For every final extracted value, apply the unescaping rules:
-//     - replace "\;" with ";"
-//     - replace "\," with ","
-//     - replace "\n" and "\N" with an actual newline character
-//     - replace "\\" with "\"
 
 /// Runs a full-consuming parser, expecting the whole input to be consumed.
 /// Returns the parsed value, or an error if the parser failed or left input

@@ -1,3 +1,5 @@
+//! Date, time, timestamp, and text value parsing for date-related vCard properties across specification versions.
+
 use crate::vcard::parser::RE;
 use crate::vcard::property::param::Param;
 use nom::Parser;

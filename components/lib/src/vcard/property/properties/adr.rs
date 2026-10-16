@@ -1,3 +1,5 @@
+//! ADR property parsing and structured representation.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyPref;
 use crate::vcard::property::PropertyValueParseError;

@@ -1,3 +1,5 @@
+//! MEDIATYPE parameter parsing for identifying the MIME media type of property values.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

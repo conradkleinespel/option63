@@ -1,3 +1,5 @@
+//! FBURL property parsing for free/busy time search URIs.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

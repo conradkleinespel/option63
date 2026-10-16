@@ -1,3 +1,5 @@
+//! VERSION property parsing for vCard specification version indication.
+
 use crate::vcard::Version;
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyBase;

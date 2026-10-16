@@ -1,3 +1,5 @@
+//! Generic fallback parameter parser and representation for unrecognized or custom property parameters.
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OtherParam {
     name: Vec<u8>,

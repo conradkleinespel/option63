@@ -1,3 +1,5 @@
+//! Generic property parser and representation for standard IANA-registered property names.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

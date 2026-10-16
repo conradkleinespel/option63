@@ -1,3 +1,5 @@
+//! Parser context, parsing states, and error types for vCard parsing.
+
 use crate::vcard::Version;
 
 /// Context for parsing vCard properties

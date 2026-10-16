@@ -1,3 +1,5 @@
+//! ANNIVERSARY property parsing and representation for anniversary dates or text.
+
 use super::AnniversaryError::UnsupportedVersion;
 use crate::vcard::Version;
 use crate::vcard::parser::ParseContext;

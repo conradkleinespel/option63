@@ -1,3 +1,5 @@
+//! KIND property parsing for entity classification.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

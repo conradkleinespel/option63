@@ -1,3 +1,5 @@
+//! N (structured name) property parsing and component extraction.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::NError::TooManyFields;
 use crate::vcard::property::PropertyValueParseError;

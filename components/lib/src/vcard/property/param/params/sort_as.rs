@@ -1,3 +1,5 @@
+//! SORT-AS parameter parsing for specifying sorting strings.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

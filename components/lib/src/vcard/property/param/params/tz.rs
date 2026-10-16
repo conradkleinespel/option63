@@ -1,3 +1,5 @@
+//! TZ parameter parsing for associating time zone identifiers or offsets with properties.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

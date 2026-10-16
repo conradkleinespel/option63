@@ -1,3 +1,5 @@
+//! LANG property parsing for preferred language tags.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

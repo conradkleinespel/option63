@@ -1,3 +1,5 @@
+//! MEMBER property to add a member to the group a vCard represents.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

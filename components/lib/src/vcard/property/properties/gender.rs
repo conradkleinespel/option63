@@ -1,3 +1,5 @@
+//! GENDER property parsing and gender identity representation.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

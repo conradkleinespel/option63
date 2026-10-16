@@ -1,3 +1,5 @@
+//! General vCard property data model and traits.
+
 pub mod param;
 
 mod datetime;

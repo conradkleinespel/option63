@@ -1,3 +1,5 @@
+//! ALTID parameter parsing and representation for linking alternative representations of a property.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

@@ -1,3 +1,5 @@
+//! IMPP property parsing for instant messaging and presence protocol URIs.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

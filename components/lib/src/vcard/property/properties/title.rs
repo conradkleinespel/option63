@@ -1,3 +1,5 @@
+//! TITLE property parsing for job titles and functional positions.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

@@ -1,3 +1,5 @@
+//! TYPE parameter parsing for classifying the purpose or context of a property value.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

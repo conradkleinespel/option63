@@ -1,3 +1,5 @@
+//! UID (unique identifier) property parsing for persistent entity identification.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

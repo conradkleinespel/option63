@@ -1,3 +1,5 @@
+//! VALUE parameter parsing for explicitly specifying property value data types.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

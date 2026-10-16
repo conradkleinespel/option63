@@ -1,3 +1,5 @@
+//! LANGUAGE parameter parsing for identifying the language of property values.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 

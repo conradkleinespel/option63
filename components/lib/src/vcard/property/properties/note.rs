@@ -1,3 +1,5 @@
+//! NOTE property parsing for descriptive text annotations.
+
 use crate::vcard::parser::ParseContext;
 use crate::vcard::property::PropertyValueParseError;
 use crate::vcard::property::param::Param;

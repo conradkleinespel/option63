@@ -1,3 +1,5 @@
+//! GEO parameter parsing for associating geographic coordinates with properties.
+
 use crate::vcard::parser::ParseError;
 use crate::vcard::property::param::ParamTrait;
 
