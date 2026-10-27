@@ -1,5 +1,8 @@
-pub mod auth;
-pub mod config;
-pub mod creds;
+//! CardDAV module grouping client operations, server interfaces, protocol definitions, and error handling.
+
+pub mod client;
 pub mod error;
-pub mod proxy;
+pub mod protocol;
+pub mod server;
+pub mod server_handler_in_memory;
+pub mod server_handler_proxy;

@@ -10,10 +10,17 @@ keywords = ["vcard", "carddav", "o63", "option63"]
 
 [dependencies]
 thiserror = "2.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rpassword = "7"
 nom = "8"
-actix-web = "4"
+actix-web = { version = "4", features = ["rustls-0_23"] }
+rustls = "0.23"
 reqwest = { version = "0.13", default-features = false, features = ["http2", "rustls"] }
 quick-xml = "0.42"
 base64 = "0.23"
 uuid = { version = "1", features = ["v4"] }
 tracing = "0.1"
+
+[dev-dependencies]
+tempfile = "3"
