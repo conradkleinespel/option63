@@ -1,13 +1,10 @@
 pub mod carddav;
 pub mod error;
 pub mod io;
+pub mod tracing;
 pub mod vcard;
 
-use crate::carddav::creds_command::handle_creds_command;
-use crate::carddav::proxy_command::handle_proxy_command;
 use crate::error::CliError;
-use crate::vcard::drop_command::handle_drop_command;
-use crate::vcard::show_command::handle_show_command;
 use clap::{Arg, ArgMatches, Command};
 use std::process::ExitCode;
 
@@ -21,17 +18,43 @@ fn main() -> ExitCode {
     }
 }
 
+fn is_verbose(matches: &ArgMatches) -> bool {
+    if matches.get_flag("verbose") {
+        return true;
+    }
+    if let Some((_, sub)) = matches.subcommand() {
+        return is_verbose(sub);
+    }
+    false
+}
+
 fn run() -> Result<(), CliError> {
     let matches = parse_arg_matches();
+    let verbose = is_verbose(&matches);
+    tracing::init(verbose);
     match matches.subcommand() {
         Some(("vcard", vcard_matches)) => match vcard_matches.subcommand() {
-            Some(("show", show_arg_matches)) => handle_show_command(show_arg_matches)?,
-            Some(("drop", drop_arg_matches)) => handle_drop_command(drop_arg_matches)?,
+            Some(("show", show_arg_matches)) => vcard::show::run(show_arg_matches)?,
+            Some(("drop", drop_arg_matches)) => vcard::drop::run(drop_arg_matches)?,
             _ => unreachable!("Exhausted list of vcard subcommands and subcommand_required(true)"),
         },
         Some(("carddav", carddav_matches)) => match carddav_matches.subcommand() {
-            Some(("creds", creds_arg_matches)) => handle_creds_command(creds_arg_matches)?,
-            Some(("proxy", proxy_arg_matches)) => handle_proxy_command(proxy_arg_matches)?,
+            Some(("config", config_arg_matches)) => carddav::config::run(config_arg_matches)?,
+            Some(("proxy", proxy_arg_matches)) => carddav::proxy::run(proxy_arg_matches)?,
+            Some(("client", client_matches)) => match client_matches.subcommand() {
+                Some(("list", sub_matches)) => carddav::client::list::run(sub_matches)?,
+                Some(("cards", sub_matches)) => carddav::client::cards::run(sub_matches)?,
+                Some(("query", sub_matches)) => carddav::client::query::run(sub_matches)?,
+                Some(("get", sub_matches)) => carddav::client::get::run(sub_matches)?,
+                Some(("put", sub_matches)) => carddav::client::put::run(sub_matches)?,
+                Some(("delete", sub_matches)) => carddav::client::delete::run(sub_matches)?,
+                Some(("sync", sub_matches)) => carddav::client::sync::run(sub_matches)?,
+                _ => {
+                    unreachable!(
+                        "Exhausted list of carddav client subcommands and subcommand_required(true)"
+                    )
+                }
+            },
             _ => {
                 unreachable!("Exhausted list of carddav subcommands and subcommand_required(true)")
             }
@@ -48,6 +71,14 @@ fn parse_arg_matches() -> ArgMatches {
         .about("option63 helps you manage vCards")
         .subcommand_required(true)
         .arg_required_else_help(true)
+        .arg(
+            Arg::new("verbose")
+                .short('v')
+                .long("verbose")
+                .help("Enable DEBUG level logging via the tracing integration")
+                .global(true)
+                .action(clap::ArgAction::SetTrue),
+        )
         .subcommand(
             Command::new("vcard")
                 .about("vCard inspection and transformation commands")
@@ -128,49 +159,192 @@ fn parse_arg_matches() -> ArgMatches {
                 .subcommand_required(true)
                 .arg_required_else_help(true)
                 .subcommand(
-                    Command::new("creds").about(
-                        "Print base64-encoded upstream credentials as O63_CARDDAV_PROXY_* variables",
-                    ),
+                    Command::new("config")
+                        .about("Interactively create or edit an owner-only config file for the client and/or proxy")
+                        .arg(
+                            Arg::new("client")
+                                .long("client")
+                                .help("Write the carddav.client object for the direct commands (list, cards, query, get, put, delete, sync)")
+                                .required(false)
+                                .action(clap::ArgAction::SetTrue),
+                        )
+                        .arg(
+                            Arg::new("proxy")
+                                .long("proxy")
+                                .help("Write the carddav.proxy object (upstream + downstream) for carddav proxy")
+                                .required(false)
+                                .action(clap::ArgAction::SetTrue),
+                        )
+                        .arg(
+                            Arg::new("output")
+                                .long("output")
+                                .value_name("PATH")
+                                .help("Output config file path (required; never stdout)")
+                                .required(true),
+                        )
+                        .arg(
+                            Arg::new("force")
+                                .long("force")
+                                .help("Edit the output file in place if it already exists, seeding prompts from its values")
+                                .required(false)
+                                .action(clap::ArgAction::SetTrue),
+                        )
+                        .group(
+                            clap::ArgGroup::new("role")
+                                .required(true)
+                                .multiple(true)
+                                .args(["client", "proxy"]),
+                        ),
                 )
                 .subcommand(
                     Command::new("proxy")
                         .about("Run a CardDAV reverse proxy that forwards traffic to an upstream server")
                         .arg(
-                            Arg::new("listen")
-                                .short('l')
-                                .long("listen")
-                                .help("Address to listen on, e.g. 127.0.0.1:8080")
-                                .default_value("127.0.0.1:8080")
-                                .required(false),
-                        )
-                        .arg(
-                            Arg::new("verbose")
-                                .short('v')
-                                .long("verbose")
-                                .help("Enable DEBUG logging level")
+                            Arg::new("config")
+                                .long("config")
+                                .value_name("PATH")
+                                .help("JSON config file with carddav.proxy.upstream.url/username/password and carddav.proxy.downstream.listen/username/password, carddav.dangerousLogRequestResponseBody (repeatable, merged in order; must be owner-only, e.g. chmod 600; generate one with `o63 carddav config --proxy`)")
                                 .required(false)
-                                .action(clap::ArgAction::SetTrue),
+                                .action(clap::ArgAction::Append),
+                        ),
+                )
+                .subcommand(
+                    Command::new("client")
+                        .about("CardDAV client commands")
+                        .subcommand_required(true)
+                        .arg_required_else_help(true)
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("list")
+                                    .about("Discover and list address books on a CardDAV server")
+                            )
                         )
-                        .arg(
-                            Arg::new("upstream")
-                                .short('u')
-                                .long("upstream")
-                                .help("Upstream CardDAV server URL, e.g. https://dav.example.com")
-                                .required(true),
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("cards")
+                                    .about("List cards in an address book collection")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path, e.g. /addressbooks/user/contacts/")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                            )
                         )
-                        .arg(
-                            Arg::new("dangerous-log-request-response-body")
-                                .long("dangerous-log-request-response-body")
-                                .help("Log full request/response bodies")
-                                .required(false)
-                                .action(clap::ArgAction::SetTrue),
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("query")
+                                    .about("Send an addressbook-query report to find matching cards")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                                    .arg(
+                                        Arg::new("filter-prop")
+                                            .long("filter-prop")
+                                            .help("vCard property name to filter on (e.g. FN, EMAIL)")
+                                            .required(false),
+                                    )
+                                    .arg(
+                                        Arg::new("filter-value")
+                                            .long("filter-value")
+                                            .help("Value to match (contains match)")
+                                            .required(false),
+                                    )
+                                    .arg(
+                                        Arg::new("limit")
+                                            .long("limit")
+                                            .help("Maximum number of results")
+                                            .required(false),
+                                    )
+                            )
                         )
-                        .arg(
-                            Arg::new("dangerous-allow-plain-text-upstream")
-                                .long("dangerous-allow-plain-text-upstream")
-                                .help("Allow the upstream server to use plain-text HTTP instead of HTTPS")
-                                .required(false)
-                                .action(clap::ArgAction::SetTrue),
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("get")
+                                    .about("Get a vCard from an address book")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                                    .arg(
+                                        Arg::new("card")
+                                            .help("Card filename, e.g. cyrus.vcf")
+                                            .required(true)
+                                            .index(2),
+                                    )
+                                    .arg(
+                                        Arg::new("output")
+                                            .short('o')
+                                            .long("output")
+                                            .help("Output file path (default: stdout)")
+                                            .required(false),
+                                    )
+                            )
+                        )
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("put")
+                                    .about("Upload a vCard to an address book")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                                    .arg(
+                                        Arg::new("card")
+                                            .help("Card filename, e.g. cyrus.vcf")
+                                            .required(true)
+                                            .index(2),
+                                    )
+                                    .arg(
+                                        Arg::new("input")
+                                            .help("Input file path, or '-' for stdin")
+                                            .required(true)
+                                            .index(3),
+                                    )
+                            )
+                        )
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("delete")
+                                    .about("Delete a vCard from an address book")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                                    .arg(
+                                        Arg::new("card")
+                                            .help("Card filename, e.g. cyrus.vcf")
+                                            .required(true)
+                                            .index(2),
+                                    )
+                            )
+                        )
+                        .subcommand(
+                            crate::carddav::common::add_connection_args(
+                                Command::new("sync")
+                                    .about("Synchronize with an address book using sync-collection")
+                                    .arg(
+                                        Arg::new("collection")
+                                            .help("Address book collection path")
+                                            .required(true)
+                                            .index(1),
+                                    )
+                                    .arg(
+                                        Arg::new("sync-token")
+                                            .long("sync-token")
+                                            .help("Previous sync token (omit for initial sync)")
+                                            .required(false),
+                                    )
+                            )
                         ),
                 ),
         )

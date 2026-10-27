@@ -1,2 +1,2 @@
-pub mod drop_command;
-pub mod show_command;
+pub mod drop;
+pub mod show;

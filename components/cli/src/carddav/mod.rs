@@ -1,2 +1,4 @@
-pub mod creds_command;
-pub mod proxy_command;
+pub mod client;
+pub mod common;
+pub mod config;
+pub mod proxy;

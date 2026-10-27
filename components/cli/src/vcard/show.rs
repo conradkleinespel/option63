@@ -4,7 +4,7 @@ use crate::trim_whitespace;
 use clap::ArgMatches;
 use o63::vcard::VCard;
 
-pub fn handle_show_command(arg_matches: &ArgMatches) -> Result<(), CliError> {
+pub fn run(arg_matches: &ArgMatches) -> Result<(), CliError> {
     let input = resolve_input(arg_matches.get_one::<String>("input").map(String::as_str))?;
     let content = read_input(&input)?;
 

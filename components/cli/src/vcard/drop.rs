@@ -4,7 +4,7 @@ use clap::ArgMatches;
 use o63::vcard::VCard;
 use regex::Regex;
 
-pub fn handle_drop_command(arg_matches: &ArgMatches) -> Result<(), CliError> {
+pub fn run(arg_matches: &ArgMatches) -> Result<(), CliError> {
     let input = resolve_input(arg_matches.get_one::<String>("input").map(String::as_str))?;
     let field = arg_matches
         .get_one::<String>("field")
