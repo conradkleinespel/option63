@@ -6,7 +6,6 @@
 .github
 .idea
 .junie
-.private
 githooks
 *.iml
 *.vcf
