@@ -14,6 +14,6 @@ createRoot(document.getElementById("personal-demo")).render(
   <DemoTransform
     inputVcard={INPUT}
     defaultProps="FN,TEL"
-    accentLabel="field redaction"
+    accentLabel="property allow-listing"
   />
 );

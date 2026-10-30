@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Share contacts on your terms | option63.eu{% endblock %}
-{% block description %}option63 transforms contact data at the boundary - a toolkit for IT security, personal privacy, and AI integrations.{% endblock %}
+{% block description %}option63 filters contact data at the boundary - a toolkit for IT security, personal privacy, and AI integrations.{% endblock %}
 
 {% block content %}
 <section class="border-b border-line">
@@ -11,7 +11,7 @@
         Share contacts on your terms.
       </h1>
       <p class="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-3xl mb-10">
-        option63 rewrites vCard data at the point where it leaves a trusted environment - before it reaches unvetted devices, untrusted clouds, or AI ingestion. Only what you allow ever crosses the line.
+        option63 applies a property allow-list and drops named properties at the point where vCard data leaves a trusted environment - before it reaches unvetted devices, untrusted clouds, or AI ingestion. Only what you allow ever crosses the line. Built for IT security, personal privacy, and AI integrations.
       </p>
     </div>
   </div>
@@ -24,7 +24,7 @@
             How it works
           </h2>
           <p class="text-lg text-gray-600 leading-relaxed">
-            option63 rewrites each vCard at the boundary - sensitive fields are removed, masked, or relayed before the contact ever reaches an untrusted device, cloud, or AI agent.
+            option63 applies a property allow-list to each vCard at the boundary - properties you do not allow are removed before the contact reaches an untrusted device, cloud, or AI agent.
           </p>
         </div>
 
@@ -62,31 +62,37 @@ END:VCARD</pre>
             </div>
             <span class="font-mono text-2xl text-ink leading-none hidden md:inline">→</span>
             <span class="font-mono text-2xl text-ink leading-none md:hidden">↓</span>
-            <span class="font-mono text-xs uppercase tracking-widest text-gray-500 text-center">filters, transforms</span>
+            <span class="font-mono text-xs uppercase tracking-widest text-gray-500 text-center">allow-list</span>
           </div>
 
           <div id="after" class="rounded-lg border-2 border-green-200 bg-green-50 overflow-hidden flex flex-col">
             <div class="flex items-center justify-between gap-3 px-5 py-3 border-b-2 border-green-200 bg-green-100">
               <span class="font-mono text-xs uppercase tracking-widest text-green-700">After</span>
-              <span class="text-sm font-medium text-green-800">Un-trusted device, cloud or agent</span>
+              <span class="text-sm font-medium text-green-800">Untrusted device, cloud or agent</span>
             </div>
             <div class="p-5 flex flex-col gap-4 flex-1">
               <div class="bg-ink text-paper rounded-lg p-4 font-mono text-sm leading-relaxed overflow-x-auto flex-1">
 <pre class="m-0">BEGIN:VCARD
 VERSION:4.0
-FN:J.M.
+FN:Jamie Morgan
 TEL;TYPE=cell:+1-555-0142
-EMAIL:4deef0b60a8c@relay.option63.eu
 END:VCARD</pre>
               </div>
               <div class="flex flex-wrap gap-2">
-                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Initials only</span>
-                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Relay email</span>
-                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Org stripped</span>
-                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Note stripped</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Name kept</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Phone kept</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Org removed</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Title removed</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Email removed</span>
+                <span class="font-mono text-xs text-green-700 bg-green-100 border border-green-200 px-2 py-1 rounded">Note removed</span>
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="mt-8 p-5 border border-line bg-white rounded-lg">
+          <span class="font-mono text-xs uppercase tracking-widest text-gray-400 block mb-3">Backing command</span>
+          <code class="font-mono text-sm">o63 vcard show contacts.vcf --props FN,TEL</code>
         </div>
       </div>
     </section>
@@ -126,7 +132,7 @@ END:VCARD</pre>
         Three ways to use option63
       </h2>
       <p class="text-lg text-gray-600 leading-relaxed mt-4">
-        A Rust library for integration, a CLI for pipelines, and a CardDAV proxy - all RFC-compliant, memory-safe, and designed for privacy-critical workflows.
+        A Rust library for integration, a CLI for pipelines, and a CardDAV proxy. RFC-compliant and memory-safe by default.
       </p>
     </div>
 
@@ -134,7 +140,7 @@ END:VCARD</pre>
       <div class="flex flex-col min-w-0 p-8 border border-line hover:border-ink hover:bg-gray-50 transition-all rounded-lg">
         <h3 class="text-2xl font-bold tracking-tight mb-3">Rust crate</h3>
         <p class="text-gray-600 leading-relaxed flex-1">
-          `o63` - parse and display vCard files. RFC-compliant, memory-safe, built for privacy-critical infrastructure.
+          `o63` - parse and inspect vCard files in Rust, built for privacy-critical infrastructure.
         </p>
         <div class="bg-ink text-paper rounded-lg p-5 font-mono text-sm mt-6 min-w-0">
           <code class="m-0 block w-full">cargo add o63</code>
@@ -143,21 +149,20 @@ END:VCARD</pre>
       <div class="flex flex-col min-w-0 p-8 border border-line hover:border-ink hover:bg-gray-50 transition-all rounded-lg">
         <h3 class="text-2xl font-bold tracking-tight mb-3">Command line</h3>
         <p class="text-gray-600 leading-relaxed flex-1">
-          Validate, display, and filter vCard properties - build privacy-preserving export and ingestion pipelines.
+          Inspect, display, filter, and drop vCard properties - build privacy-preserving export and ingestion pipelines.
         </p>
         <div class="bg-ink text-paper rounded-lg p-5 font-mono text-sm mt-6 min-w-0">
           <code class="m-0 block w-full">o63 vcard --help</code>
         </div>
       </div>
-      <div class="flex flex-col min-w-0 p-8 border border-line rounded-lg relative">
-        <span class="absolute top-4 right-4 font-mono text-xs bg-ink text-paper px-2 py-1 rounded">in progress</span>
+      <div class="flex flex-col min-w-0 p-8 border border-line rounded-lg">
         <h3 class="text-2xl font-bold tracking-tight mb-3">CardDAV proxy</h3>
         <p class="text-gray-600 leading-relaxed flex-1">
-          Make your contacts (Google, Outlook, etc) available through a CardDAV server with filtering applied.
+          Front a CardDAV account with its own login, TLS, and ACL gating.
         </p>
-          <div class="bg-ink text-paper rounded-lg p-5 font-mono text-sm mt-6 min-w-0">
-              <code class="m-0 block w-full">o63 carddav --help</code>
-          </div>
+        <div class="bg-ink text-paper rounded-lg p-5 font-mono text-sm mt-6 min-w-0">
+          <code class="m-0 block w-full">o63 carddav proxy --help</code>
+        </div>
       </div>
     </div>
   </div>

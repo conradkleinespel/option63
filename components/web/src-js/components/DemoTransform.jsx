@@ -88,28 +88,30 @@ export default function DemoTransform({ inputVcard, defaultProps, accentLabel })
           ) : lines.length === 0 ? (
             <p className="text-gray-500 text-sm">No properties matched.</p>
           ) : (
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-gray-300 text-left">
-                  <th className="py-2 pr-4 font-mono font-semibold whitespace-nowrap">
-                    Property
-                  </th>
-                  <th className="py-2 font-semibold">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lines.map((line, i) => (
-                  <tr key={i} className="border-b border-gray-100 align-top">
-                    <td className="py-2 pr-4 font-mono text-xs">
-                      {line.name}
-                    </td>
-                    <td className="py-2 font-mono text-xs break-all">
-                      {line.value}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-gray-300 text-left">
+                    <th className="py-2 pr-4 font-mono font-semibold whitespace-nowrap">
+                      Property
+                    </th>
+                    <th className="py-2 font-semibold">Value</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lines.map((line, i) => (
+                    <tr key={i} className="border-b border-gray-100 align-top">
+                      <td className="py-2 pr-4 font-mono text-xs">
+                        {line.name}
+                      </td>
+                      <td className="py-2 font-mono text-xs break-all">
+                        {line.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

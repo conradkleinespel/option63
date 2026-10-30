@@ -36,6 +36,15 @@
           <p class="text-gray-700 leading-relaxed">{{ problem_after }}</p>
         </div>
       </div>
+
+      <div class="mt-8 p-5 border border-line bg-white rounded-lg">
+        <span class="font-mono text-xs uppercase tracking-widest text-gray-400 block mb-3">Shipped commands</span>
+        <div class="flex flex-col gap-2">
+          {% for command in commands %}
+          <code class="font-mono text-sm break-all">{{ command }}</code>
+          {% endfor %}
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -50,17 +59,36 @@
         <strong>Demo data is not stored anywhere. However, as an extra precaution, please use test data only and do not submit real personal information.</strong>
       </p>
     </div>
-    <div id="{{ demo_mount }}"></div>
-    <noscript>
-      <div class="p-6 border border-line bg-amber-50 rounded-lg">
-        <span class="font-mono text-xs uppercase tracking-widest text-amber-700 block mb-3">JavaScript required</span>
-        <p class="text-gray-700 leading-relaxed">
-          The Live demo above is interactive and needs JavaScript to run. Enable JavaScript in your browser to see it in action.
-        </p>
-      </div>
-    </noscript>
+    <div id="{{ demo_mount }}">
+      <noscript>
+        <div class="p-6 border border-line bg-amber-50 rounded-lg">
+          <span class="font-mono text-xs uppercase tracking-widest text-amber-700 block mb-3">JavaScript required</span>
+          <p class="text-gray-700 leading-relaxed">
+            This interactive demo needs JavaScript. {{ demo_noscript }}
+          </p>
+        </div>
+      </noscript>
+    </div>
   </div>
 </section>
+
+{% if !under_consideration.is_empty() %}
+<section class="border-b border-line">
+  <div class="container-wide py-20 md:py-28">
+    <div class="max-w-3xl">
+      <h2 class="text-3xl font-bold tracking-tight mb-8">Features under consideration</h2>
+      <ul class="flex flex-col gap-4">
+        {% for item in under_consideration %}
+        <li class="p-5 border border-line bg-gray-50 rounded-lg">
+          <span class="font-medium text-ink block mb-2">{{ item.name }}</span>
+          <span class="text-gray-700 leading-relaxed block">{{ item.description }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section>
   <div class="container-wide py-20 md:py-28">

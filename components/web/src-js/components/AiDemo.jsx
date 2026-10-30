@@ -16,6 +16,6 @@ createRoot(document.getElementById("ai-demo")).render(
   <DemoTransform
     inputVcard={INPUT}
     defaultProps="FN,TITLE"
-    accentLabel="minimal AI-safe subset"
+    accentLabel="property allow-listing"
   />
 );
