@@ -12,6 +12,7 @@ path = "src/main.rs"
 actix-web = "4"
 actix-files = "0.7"
 askama = "0.16"
+clap = "4"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 o63 = { path = "../lib" }

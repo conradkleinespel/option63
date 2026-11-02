@@ -1432,6 +1432,7 @@ dependencies = [
  "actix-files",
  "actix-web",
  "askama",
+ "clap",
  "o63",
  "serde",
  "serde_json",

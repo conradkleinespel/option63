@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build:css": "tailwindcss -i ./src-css/app.css -o ./static/css/app.css --minify",
-    "dev:css": "tailwindcss -i ./src-css/app.css -o ./static/css/app.css --watch",
+    "dev:css": "tailwindcss -i ./src-css/app.css -o ./static/css/app.css --watch=always",
     "build:js": "node build-js.mjs",
     "dev:js": "node build-js.mjs --watch",
     "build": "npm run build:css && npm run build:js",

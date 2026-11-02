@@ -1,0 +1,85 @@
+name: option63-dev
+
+services:
+  init-config:
+    image: docker.io/library/alpine:3
+    user: "1001:1001"
+    volumes:
+      - ./components/web/dev/init-config.sh:/init-config.sh:ro
+      - web-config:/config:U
+    command: ["/bin/sh", "/init-config.sh"]
+
+  postgres:
+    image: docker.io/library/postgres:17-alpine
+    user: "999:999"
+    environment:
+      POSTGRES_USER: option63
+      POSTGRES_PASSWORD: option63
+      POSTGRES_DB: option63
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:U
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U option63 -d option63"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: components/web/dev/web.Dockerfile
+    user: "1001:1001"
+    working_dir: /app
+    depends_on:
+      init-config:
+        condition: service_completed_successfully
+    volumes:
+      - .:/app
+      - web-config:/config:U
+      - cargo-target:/app/target:U
+      - cargo-registry:/home/dev/.cargo/registry:U
+      - static:/app/components/web/static:U
+    ports:
+      - "8080:8080"
+    command:
+      - watchexec
+      - --restart
+      - --stop-timeout
+      - 0s
+      - --watch
+      - components
+      - --watch
+      - Cargo.toml
+      - --watch
+      - Cargo.lock
+      - --ignore
+      - components/web/static/** # TODO: probably not needed, assets are fetched from disk at request time, not cached
+      - --ignore
+      - components/web/node_modules/** # TODO: probably not needed, can live without live reload of node_modules
+      - --
+      - cargo
+      - run
+      - -p
+      - o63_web
+      - --
+      - --config
+      - /config/web.json
+
+  assets:
+    build:
+      context: .
+      dockerfile: components/web/dev/assets.Dockerfile
+    user: "1001:1001"
+    working_dir: /app/components/web
+    volumes:
+      - .:/app:ro
+      - node-modules:/app/components/web/node_modules:U
+      - static:/app/components/web/static:U
+
+volumes:
+  web-config:
+  postgres-data:
+  cargo-target:
+  cargo-registry:
+  node-modules:
+  static:

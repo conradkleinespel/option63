@@ -5,6 +5,7 @@ pub mod merge;
 pub mod permission;
 pub mod prompt;
 pub mod proxy;
+pub mod web;
 
 use crate::config::permission::reject_loose_permissions;
 use serde::{Deserialize, Serialize};
@@ -15,6 +16,10 @@ pub use merge::merge;
 pub use proxy::{
     DEFAULT_PROXY_LISTEN, ProxyConfig, ProxyDownstreamConfig, ProxyDownstreamResolvedConfig,
     ProxyResolvedConfig, ProxyUpstreamConfig, ProxyUpstreamResolvedConfig, TlsSettings,
+};
+pub use web::{
+    DEFAULT_DATABASE_PORT, DEFAULT_WEB_LISTEN, WebConfig, WebDatabaseConfig,
+    WebDatabaseResolvedConfig, WebDatabaseTlsConfig, WebResolvedConfig,
 };
 
 mod serde_defaults {
@@ -28,6 +33,8 @@ mod serde_defaults {
 pub struct Config {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub carddav: Option<CarddavConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub web: Option<WebConfig>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]

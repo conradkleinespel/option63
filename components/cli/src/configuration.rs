@@ -1,32 +1,35 @@
 use crate::error::CliError;
 use o63::config::prompt::{PromptIO, SystemPromptIO, prompt_optional, prompt_password, prompt_yn};
 use o63::config::{
-    CarddavConfig, ClientConfig, Config, ProxyConfig, ProxyDownstreamConfig, ProxyUpstreamConfig,
+    CarddavConfig, ClientConfig, Config, DEFAULT_DATABASE_PORT, DEFAULT_WEB_LISTEN, ProxyConfig,
+    ProxyDownstreamConfig, ProxyUpstreamConfig, WebConfig, WebDatabaseConfig, WebDatabaseTlsConfig,
 };
 use std::io::Write;
 use std::path::Path;
 
-/// Interactive config author and editor: `o63 carddav config [--client]
-/// [--proxy] --output FILE [--force]`. The sole interactive surface of the CLI.
-/// Prompts every field of the selected role(s); on an existing `--output` it
-/// seeds the prompts from that file and, with `--force`, writes the result back
-/// in place. Never writes a config to stdout.
+/// Interactive config author and editor: `o63 config [--carddav-client]
+/// [--carddav-proxy] [--web] --output FILE [--force]`. The sole interactive
+/// surface of the CLI. Prompts every field of the selected role(s); on an
+/// existing `--output` it seeds the prompts from that file and, with `--force`,
+/// writes the result back in place. Never writes a config to stdout.
 pub fn run(arg_matches: &clap::ArgMatches) -> Result<(), CliError> {
-    let include_client = arg_matches.get_flag("client");
-    let include_proxy = arg_matches.get_flag("proxy");
-    if !include_client && !include_proxy {
+    let include_client = arg_matches.get_flag("carddav-client");
+    let include_proxy = arg_matches.get_flag("carddav-proxy");
+    let include_web = arg_matches.get_flag("web");
+    if !include_client && !include_proxy && !include_web {
         return Err(CliError::InvalidInput(
-            "carddav config requires at least one of --client or --proxy".to_string(),
+            "config requires at least one of --carddav-client, --carddav-proxy, or --web"
+                .to_string(),
         ));
     }
-    let output = match arg_matches.get_one::<String>("output") {
-        Some(path) => Path::new(path).to_path_buf(),
-        None => {
-            return Err(CliError::InvalidInput(
-                "carddav config requires --output FILE (no default; the config is never written to stdout)".to_string(),
-            ))
-        }
-    };
+    let output =
+        match arg_matches.get_one::<String>("output") {
+            Some(path) => Path::new(path).to_path_buf(),
+            None => return Err(CliError::InvalidInput(
+                "config requires --output FILE (no default; the config is never written to stdout)"
+                    .to_string(),
+            )),
+        };
     let force = arg_matches.get_flag("force");
 
     let seed = if output.exists() {
@@ -42,7 +45,13 @@ pub fn run(arg_matches: &clap::ArgMatches) -> Result<(), CliError> {
     };
 
     let mut io = SystemPromptIO;
-    let doc = build_config_document(include_client, include_proxy, seed.as_ref(), &mut io)?;
+    let doc = build_config_document(
+        include_client,
+        include_proxy,
+        include_web,
+        seed.as_ref(),
+        &mut io,
+    )?;
 
     write_config_file(&output, &doc, force)
 }
@@ -58,60 +67,158 @@ fn require_value(field: &str, value: Option<String>) -> Result<String, CliError>
 fn build_config_document(
     include_client: bool,
     include_proxy: bool,
+    include_web: bool,
     seed: Option<&Config>,
     io: &mut dyn PromptIO,
 ) -> Result<String, CliError> {
-    let root_default = seed
-        .and_then(|c| c.carddav.as_ref())
-        .and_then(|c| c.dangerous_log_request_response_body)
-        .unwrap_or(false);
-    let log_body = prompt_yn(
-        io,
-        "Log request and response bodies (dangerousLogRequestResponseBody)",
-        root_default,
-    )
-    .map_err(CliError::Io)?;
-
+    let include_carddav = include_client || include_proxy;
     let mut document = Config {
-        carddav: Some(CarddavConfig {
+        carddav: None,
+        web: None,
+    };
+
+    if include_carddav {
+        let root_default = seed
+            .and_then(|c| c.carddav.as_ref())
+            .and_then(|c| c.dangerous_log_request_response_body)
+            .unwrap_or(false);
+        let log_body = prompt_yn(
+            io,
+            "Log request and response bodies (dangerousLogRequestResponseBody)",
+            root_default,
+        )
+        .map_err(CliError::Io)?;
+        document.carddav = Some(CarddavConfig {
             dangerous_log_request_response_body: Some(log_body),
             ..CarddavConfig::default()
-        }),
-    };
+        });
+    }
 
     if include_client {
         let current = seed
             .and_then(|c| c.carddav.as_ref())
             .and_then(|c| c.client.clone());
-        document.carddav.as_mut().unwrap().client = Some(prompt_client(current, io)?);
+        document
+            .carddav
+            .get_or_insert_with(CarddavConfig::default)
+            .client = Some(prompt_client(current, io)?);
     }
 
     if include_proxy {
         let current = seed
             .and_then(|c| c.carddav.as_ref())
             .and_then(|c| c.proxy.clone());
-        document.carddav.as_mut().unwrap().proxy = Some(prompt_proxy(current, io)?);
+        document
+            .carddav
+            .get_or_insert_with(CarddavConfig::default)
+            .proxy = Some(prompt_proxy(current, io)?);
+    }
+
+    if include_web {
+        let current = seed.and_then(|c| c.web.clone());
+        document.web = Some(prompt_web(current, io)?);
     }
 
     // On edit, roles not selected are preserved untouched from the seed file.
-    if !include_client
-        && let Some(seed_config) = seed
-        && let Some(client) = seed_config.carddav.as_ref().and_then(|c| c.client.clone())
-        && client != ClientConfig::default()
-    {
-        document.carddav.as_mut().unwrap().client = Some(client);
-    }
-    if !include_proxy
-        && let Some(seed_config) = seed
-        && let Some(proxy) = seed_config.carddav.as_ref().and_then(|c| c.proxy.clone())
-        && proxy != ProxyConfig::default()
-    {
-        document.carddav.as_mut().unwrap().proxy = Some(proxy);
+    if let Some(seed_config) = seed {
+        if !include_carddav {
+            document.carddav = seed_config.carddav.clone();
+        } else if let Some(seed_carddav) = seed_config.carddav.as_ref() {
+            let carddav = document.carddav.get_or_insert_with(CarddavConfig::default);
+            if !include_client {
+                carddav.client = seed_carddav.client.clone();
+            }
+            if !include_proxy {
+                carddav.proxy = seed_carddav.proxy.clone();
+            }
+        }
+        if !include_web {
+            document.web = seed_config.web.clone();
+        }
     }
 
     Ok(serde_json::to_string_pretty(&document)
         .map_err(|e| CliError::InvalidInput(format!("failed to serialize config: {e}")))?
         + "\n")
+}
+
+fn prompt_web(current: Option<WebConfig>, io: &mut dyn PromptIO) -> Result<WebConfig, CliError> {
+    io.heading("Web (web) configuration:\n")
+        .map_err(CliError::Io)?;
+    let current_listen = current
+        .as_ref()
+        .and_then(|c| c.listen.as_deref())
+        .unwrap_or(DEFAULT_WEB_LISTEN);
+    let listen = prompt_optional(io, "  Listen", Some(current_listen))
+        .map_err(CliError::Io)?
+        .unwrap_or_else(|| DEFAULT_WEB_LISTEN.to_string());
+
+    let current_database = current.as_ref().map(|c| &c.database);
+    let host = require_value(
+        "web database host",
+        prompt_optional(
+            io,
+            "    Database host",
+            current_database.and_then(|c| c.host.as_deref()),
+        )
+        .map_err(CliError::Io)?,
+    )?;
+    let current_port = current_database
+        .and_then(|c| c.port)
+        .unwrap_or(DEFAULT_DATABASE_PORT)
+        .to_string();
+    let port = prompt_optional(io, "    Database port", Some(&current_port))
+        .map_err(CliError::Io)?
+        .unwrap_or(current_port)
+        .parse::<u16>()
+        .map_err(|_| CliError::InvalidInput("web database port must be a number".to_string()))?;
+    let name = require_value(
+        "web database name",
+        prompt_optional(
+            io,
+            "    Database name",
+            current_database.and_then(|c| c.name.as_deref()),
+        )
+        .map_err(CliError::Io)?,
+    )?;
+    let username = require_value(
+        "web database username",
+        prompt_optional(
+            io,
+            "    Database username",
+            current_database.and_then(|c| c.username.as_deref()),
+        )
+        .map_err(CliError::Io)?,
+    )?;
+    let password = require_value(
+        "web database password",
+        prompt_password(
+            io,
+            "    Database password",
+            current_database.and_then(|c| c.password.as_deref()),
+        )
+        .map_err(CliError::Io)?,
+    )?;
+    let tls_enabled = prompt_yn(
+        io,
+        "    Database TLS enabled",
+        current_database.is_some_and(|c| c.tls.enabled.unwrap_or(false)),
+    )
+    .map_err(CliError::Io)?;
+
+    Ok(WebConfig {
+        listen: Some(listen),
+        database: WebDatabaseConfig {
+            host: Some(host),
+            port: Some(port),
+            name: Some(name),
+            username: Some(username),
+            password: Some(password),
+            tls: WebDatabaseTlsConfig {
+                enabled: Some(tls_enabled),
+            },
+        },
+    })
 }
 
 fn prompt_client(

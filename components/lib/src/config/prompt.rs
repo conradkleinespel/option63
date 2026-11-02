@@ -2,7 +2,7 @@
 
 use std::io::{self, IsTerminal, Write, stdin};
 
-/// Whether interactive prompting is available. Only `carddav config` prompts;
+/// Whether interactive prompting is available. Only `o63 config` prompts;
 /// the runtime commands never do.
 pub fn prompt_enabled() -> bool {
     io::stdin().is_terminal()

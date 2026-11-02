@@ -1,4 +1,5 @@
 pub mod carddav;
+pub mod configuration;
 pub mod error;
 pub mod io;
 pub mod tracing;
@@ -33,13 +34,13 @@ fn run() -> Result<(), CliError> {
     let verbose = is_verbose(&matches);
     tracing::init(verbose);
     match matches.subcommand() {
+        Some(("config", config_arg_matches)) => configuration::run(config_arg_matches)?,
         Some(("vcard", vcard_matches)) => match vcard_matches.subcommand() {
             Some(("show", show_arg_matches)) => vcard::show::run(show_arg_matches)?,
             Some(("drop", drop_arg_matches)) => vcard::drop::run(drop_arg_matches)?,
             _ => unreachable!("Exhausted list of vcard subcommands and subcommand_required(true)"),
         },
         Some(("carddav", carddav_matches)) => match carddav_matches.subcommand() {
-            Some(("config", config_arg_matches)) => carddav::config::run(config_arg_matches)?,
             Some(("proxy", proxy_arg_matches)) => carddav::proxy::run(proxy_arg_matches)?,
             Some(("client", client_matches)) => match client_matches.subcommand() {
                 Some(("list", sub_matches)) => carddav::client::list::run(sub_matches)?,
@@ -154,48 +155,55 @@ fn parse_arg_matches() -> ArgMatches {
                 ),
         )
         .subcommand(
+            Command::new("config")
+                .about("Interactively create or edit an owner-only config file for CardDAV and web roles")
+                .arg(
+                    Arg::new("carddav-client")
+                        .long("carddav-client")
+                        .help("Write the carddav.client object for the direct commands (list, cards, query, get, put, delete, sync)")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("carddav-proxy")
+                        .long("carddav-proxy")
+                        .help("Write the carddav.proxy object (upstream + downstream) for carddav proxy")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("web")
+                        .long("web")
+                        .help("Write the web object for the website server (listen + PostgreSQL database)")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .arg(
+                    Arg::new("output")
+                        .long("output")
+                        .value_name("PATH")
+                        .help("Output config file path (required; never stdout)")
+                        .required(true),
+                )
+                .arg(
+                    Arg::new("force")
+                        .long("force")
+                        .help("Edit the output file in place if it already exists, seeding prompts from its values")
+                        .required(false)
+                        .action(clap::ArgAction::SetTrue),
+                )
+                .group(
+                    clap::ArgGroup::new("role")
+                        .required(true)
+                        .multiple(true)
+                        .args(["carddav-client", "carddav-proxy", "web"]),
+                ),
+        )
+        .subcommand(
             Command::new("carddav")
                 .about("CardDAV commands")
                 .subcommand_required(true)
                 .arg_required_else_help(true)
-                .subcommand(
-                    Command::new("config")
-                        .about("Interactively create or edit an owner-only config file for the client and/or proxy")
-                        .arg(
-                            Arg::new("client")
-                                .long("client")
-                                .help("Write the carddav.client object for the direct commands (list, cards, query, get, put, delete, sync)")
-                                .required(false)
-                                .action(clap::ArgAction::SetTrue),
-                        )
-                        .arg(
-                            Arg::new("proxy")
-                                .long("proxy")
-                                .help("Write the carddav.proxy object (upstream + downstream) for carddav proxy")
-                                .required(false)
-                                .action(clap::ArgAction::SetTrue),
-                        )
-                        .arg(
-                            Arg::new("output")
-                                .long("output")
-                                .value_name("PATH")
-                                .help("Output config file path (required; never stdout)")
-                                .required(true),
-                        )
-                        .arg(
-                            Arg::new("force")
-                                .long("force")
-                                .help("Edit the output file in place if it already exists, seeding prompts from its values")
-                                .required(false)
-                                .action(clap::ArgAction::SetTrue),
-                        )
-                        .group(
-                            clap::ArgGroup::new("role")
-                                .required(true)
-                                .multiple(true)
-                                .args(["client", "proxy"]),
-                        ),
-                )
                 .subcommand(
                     Command::new("proxy")
                         .about("Run a CardDAV reverse proxy that forwards traffic to an upstream server")
@@ -203,7 +211,7 @@ fn parse_arg_matches() -> ArgMatches {
                             Arg::new("config")
                                 .long("config")
                                 .value_name("PATH")
-                                .help("JSON config file with carddav.proxy.upstream.url/username/password and carddav.proxy.downstream.listen/username/password, carddav.dangerousLogRequestResponseBody (repeatable, merged in order; must be owner-only, e.g. chmod 600; generate one with `o63 carddav config --proxy`)")
+                                .help("JSON config file with carddav.proxy.upstream.url/username/password and carddav.proxy.downstream.listen/username/password, carddav.dangerousLogRequestResponseBody (repeatable, merged in order; must be owner-only, e.g. chmod 600; generate one with `o63 config --carddav-proxy`)")
                                 .required(false)
                                 .action(clap::ArgAction::Append),
                         ),

@@ -15,6 +15,8 @@ in
     gcc
     watchexec
     detect-secrets
+    podman
+    podman-compose
   ]
   ++ privateScripts;
   shellHook = ''

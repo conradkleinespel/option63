@@ -2,6 +2,7 @@
 
 use crate::config::{
     CarddavConfig, ClientConfig, Config, ProxyConfig, ProxyDownstreamConfig, ProxyUpstreamConfig,
+    WebConfig, WebDatabaseConfig, WebDatabaseTlsConfig,
 };
 
 pub trait Merge {
@@ -61,10 +62,32 @@ impl_merge!(ProxyDownstreamConfig {
     dangerous_allow_acl_passthrough,
 });
 
+impl_merge!(WebConfig { listen, database });
+
+impl_merge!(WebDatabaseConfig {
+    host,
+    port,
+    name,
+    username,
+    password,
+    tls,
+});
+
+impl_merge!(WebDatabaseTlsConfig { enabled });
+
+fn merge_role<T: Merge>(base: Option<T>, incoming: Option<T>) -> Option<T> {
+    match (base, incoming) {
+        (Some(base), Some(incoming)) => Some(base.merge(incoming)),
+        (None, incoming) => incoming,
+        (base, None) => base,
+    }
+}
+
 impl Merge for Config {
     fn merge(self, incoming: Self) -> Self {
         Self {
-            carddav: self.carddav.merge(incoming.carddav),
+            carddav: merge_role(self.carddav, incoming.carddav),
+            web: merge_role(self.web, incoming.web),
         }
     }
 }
