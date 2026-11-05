@@ -56,6 +56,7 @@ impl_merge!(ProxyDownstreamConfig {
     listen,
     username,
     password,
+    read_only,
     tls_cert_path,
     tls_key_path,
     dangerous_trust_forwarded_proto,

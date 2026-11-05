@@ -14,22 +14,11 @@ use crate::webdav::{Acl, Depth, Propfind, Proppatch, SyncCollection};
 #[derive(Clone)]
 pub struct ProxyHandler {
     client: CarddavClient,
-    dangerous_allow_acl_passthrough: bool,
 }
 
 impl ProxyHandler {
     pub fn new(client: CarddavClient) -> Self {
-        Self {
-            client,
-            dangerous_allow_acl_passthrough: false,
-        }
-    }
-
-    pub fn new_with_acl(client: CarddavClient, dangerous_allow_acl_passthrough: bool) -> Self {
-        Self {
-            client,
-            dangerous_allow_acl_passthrough,
-        }
+        Self { client }
     }
 
     /// Access the underlying client (for testing or inspection).
@@ -51,10 +40,6 @@ impl DavHandler for ProxyHandler {
 
     fn capabilities(&self) -> DavCapabilities {
         carddav_capabilities()
-    }
-
-    fn acl_enabled(&self) -> bool {
-        self.dangerous_allow_acl_passthrough
     }
 
     async fn propfind(
@@ -97,9 +82,6 @@ impl DavHandler for ProxyHandler {
     }
 
     async fn acl(&self, path: &str, acl: &Acl) -> Result<Response, Self::Error> {
-        if !self.dangerous_allow_acl_passthrough {
-            return Ok(Response::Status(405));
-        }
         let status = self.client.dav().acl(path, acl).await?;
         Ok(Response::Status(status))
     }

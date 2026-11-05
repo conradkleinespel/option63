@@ -365,6 +365,17 @@ fn prompt_proxy(
         downstream.is_some_and(|c| c.dangerous_allow_acl_passthrough.unwrap_or(false)),
     )
     .map_err(CliError::Io)?;
+    let read_only = prompt_yn(
+        io,
+        "    Read-only mode (readOnly)",
+        downstream.is_some_and(|c| c.read_only.unwrap_or(false)),
+    )
+    .map_err(CliError::Io)?;
+    if read_only && allow_acl_passthrough {
+        return Err(CliError::InvalidInput(
+            "readOnly cannot be combined with dangerousAllowAclPassthrough".to_string(),
+        ));
+    }
 
     Ok(ProxyConfig {
         upstream: ProxyUpstreamConfig {
@@ -377,6 +388,7 @@ fn prompt_proxy(
             listen: Some(listen),
             username: Some(downstream_username),
             password: Some(downstream_password),
+            read_only: Some(read_only),
             tls_cert_path,
             tls_key_path,
             dangerous_trust_forwarded_proto: Some(trust_forwarded_proto),

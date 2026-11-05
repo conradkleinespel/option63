@@ -44,37 +44,82 @@ fn dav_method(name: &'static str) -> http::Method {
     http::Method::from_bytes(name.as_bytes()).unwrap_or(http::Method::GET)
 }
 
+/// Policy controlling which DAV methods the HTTP service exposes.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DavServiceConfig {
+    /// Whether `ACL` requests are forwarded to the underlying handler.
+    pub dangerous_allow_acl_passthrough: bool,
+    /// Whether only safe read methods are exposed.
+    pub read_only: bool,
+}
+
+impl DavServiceConfig {
+    /// ACL is exposed only when explicitly allowed and not overridden by
+    /// read-only mode.
+    pub fn acl_enabled(self) -> bool {
+        self.dangerous_allow_acl_passthrough && !self.read_only
+    }
+}
+
+/// Builder for [`DavServiceConfig`].
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DavServiceConfigBuilder {
+    config: DavServiceConfig,
+}
+
+impl DavServiceConfigBuilder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn dangerous_allow_acl_passthrough(mut self, value: bool) -> Self {
+        self.config.dangerous_allow_acl_passthrough = value;
+        self
+    }
+
+    pub fn read_only(mut self, value: bool) -> Self {
+        self.config.read_only = value;
+        self
+    }
+
+    pub fn build(self) -> DavServiceConfig {
+        self.config
+    }
+}
+
+fn allow_value(config: DavServiceConfig) -> &'static str {
+    if config.read_only {
+        "OPTIONS, GET, HEAD, PROPFIND, REPORT"
+    } else if config.acl_enabled() {
+        "OPTIONS, GET, HEAD, PROPFIND, PROPPATCH, PUT, DELETE, MKCOL, ACL, REPORT"
+    } else {
+        "OPTIONS, GET, HEAD, PROPFIND, PROPPATCH, PUT, DELETE, MKCOL, REPORT"
+    }
+}
+
 /// An actix-web service factory that wires DAV HTTP methods to a generic
 /// [`DavHandler`]. Pass the returned scope to an actix `App::service`.
 pub fn dav_service<H: DavHandler + 'static>(handler: H) -> actix_web::Scope {
+    dav_service_with_config(handler, DavServiceConfig::default())
+}
+
+/// Like [`dav_service`], with explicit policy. Read-only mode routes only safe
+/// read methods; every other method falls through to a `405` response and is
+/// never forwarded to the handler.
+pub fn dav_service_with_config<H: DavHandler + 'static>(
+    handler: H,
+    config: DavServiceConfig,
+) -> actix_web::Scope {
     actix_web::web::scope("").configure(move |cfg| {
         cfg.app_data(actix_web::web::Data::new(handler))
+            .app_data(actix_web::web::Data::new(config))
             .route("/{tail:.*}", actix_web::web::get().to(get::<H>))
-            .route("/{tail:.*}", actix_web::web::put().to(put::<H>))
-            .route("/{tail:.*}", actix_web::web::delete().to(delete::<H>))
+            .route("/{tail:.*}", actix_web::web::head().to(head::<H>))
             .route(
                 "/{tail:.*}",
                 actix_web::web::route()
                     .method(dav_method("PROPFIND"))
                     .to(propfind::<H>),
-            )
-            .route(
-                "/{tail:.*}",
-                actix_web::web::route()
-                    .method(dav_method("PROPPATCH"))
-                    .to(proppatch::<H>),
-            )
-            .route(
-                "/{tail:.*}",
-                actix_web::web::route()
-                    .method(dav_method("MKCOL"))
-                    .to(mkcol::<H>),
-            )
-            .route(
-                "/{tail:.*}",
-                actix_web::web::route()
-                    .method(dav_method("ACL"))
-                    .to(acl::<H>),
             )
             .route(
                 "/{tail:.*}",
@@ -88,6 +133,36 @@ pub fn dav_service<H: DavHandler + 'static>(handler: H) -> actix_web::Scope {
                     .method(http::Method::OPTIONS)
                     .to(options::<H>),
             );
+
+        if !config.read_only {
+            cfg.route("/{tail:.*}", actix_web::web::put().to(put::<H>))
+                .route("/{tail:.*}", actix_web::web::delete().to(delete::<H>))
+                .route(
+                    "/{tail:.*}",
+                    actix_web::web::route()
+                        .method(dav_method("PROPPATCH"))
+                        .to(proppatch::<H>),
+                )
+                .route(
+                    "/{tail:.*}",
+                    actix_web::web::route()
+                        .method(dav_method("MKCOL"))
+                        .to(mkcol::<H>),
+                );
+            if config.acl_enabled() {
+                cfg.route(
+                    "/{tail:.*}",
+                    actix_web::web::route()
+                        .method(dav_method("ACL"))
+                        .to(acl::<H>),
+                );
+            }
+        }
+
+        cfg.route(
+            "/{tail:.*}",
+            actix_web::web::route().to(method_not_allowed::<H>),
+        );
     })
 }
 
@@ -157,6 +232,15 @@ fn serialize(resp: Response) -> HttpResponse {
 }
 
 async fn get<H: DavHandler>(
+    req: HttpRequest,
+    state: actix_web::web::Data<H>,
+) -> Result<HttpResponse, DavResponder> {
+    let handler = &**state;
+    let path = path_of(&req);
+    map_result(handler, handler.get(&path).await)
+}
+
+async fn head<H: DavHandler>(
     req: HttpRequest,
     state: actix_web::web::Data<H>,
 ) -> Result<HttpResponse, DavResponder> {
@@ -270,17 +354,24 @@ async fn report<H: DavHandler>(
     map_result(handler, handler.report(&path, depth, &body).await)
 }
 
-async fn options<H: DavHandler>(req: HttpRequest, state: actix_web::web::Data<H>) -> HttpResponse {
+async fn options<H: DavHandler>(
+    req: HttpRequest,
+    state: actix_web::web::Data<H>,
+    config: actix_web::web::Data<DavServiceConfig>,
+) -> HttpResponse {
     let _ = req;
     let caps = state.capabilities();
-    let acl_enabled = state.acl_enabled();
-    let allow = if acl_enabled {
-        "OPTIONS, GET, HEAD, PROPFIND, PROPPATCH, PUT, DELETE, MKCOL, ACL, REPORT"
-    } else {
-        "OPTIONS, GET, HEAD, PROPFIND, PROPPATCH, PUT, DELETE, MKCOL, REPORT"
-    };
     HttpResponse::Ok()
         .insert_header(("DAV", caps.header_value()))
-        .insert_header(("Allow", allow))
+        .insert_header(("Allow", allow_value(**config)))
+        .finish()
+}
+
+async fn method_not_allowed<H: DavHandler>(
+    _state: actix_web::web::Data<H>,
+    config: actix_web::web::Data<DavServiceConfig>,
+) -> HttpResponse {
+    HttpResponse::MethodNotAllowed()
+        .insert_header(("Allow", allow_value(**config)))
         .finish()
 }

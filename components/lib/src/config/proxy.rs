@@ -45,6 +45,8 @@ pub struct ProxyDownstreamConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tls_cert_path: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tls_key_path: Option<String>,
@@ -73,6 +75,7 @@ pub struct ProxyDownstreamResolvedConfig {
     pub listen: SocketAddr,
     pub username: String,
     pub password: String,
+    pub read_only: bool,
     pub tls: Option<TlsSettings>,
     pub dangerous_trust_forwarded_proto: bool,
     pub dangerous_allow_acl_passthrough: bool,
@@ -153,6 +156,7 @@ impl ProxyDownstreamConfig {
             listen,
             username,
             password,
+            read_only,
             tls_cert_path,
             tls_key_path,
             dangerous_trust_forwarded_proto,
@@ -192,6 +196,7 @@ impl ProxyDownstreamConfig {
             listen,
             username: username.to_string(),
             password: password.to_string(),
+            read_only: read_only.unwrap_or(false),
             tls,
             dangerous_trust_forwarded_proto: dangerous_trust_forwarded_proto.unwrap_or(false),
             dangerous_allow_acl_passthrough: dangerous_allow_acl_passthrough.unwrap_or(false),
@@ -201,6 +206,13 @@ impl ProxyDownstreamConfig {
     }
 
     fn validate(resolved: &ProxyDownstreamResolvedConfig) -> Result<(), ConfigError> {
+        if resolved.read_only && resolved.dangerous_allow_acl_passthrough {
+            return Err(ConfigError::ContradictoryProxySettings(
+                "carddav.proxy.downstream.readOnly cannot be combined with \
+                 carddav.proxy.downstream.dangerousAllowAclPassthrough"
+                    .to_string(),
+            ));
+        }
         validate_listen(
             &resolved.listen,
             resolved.tls.is_some(),

@@ -6,7 +6,9 @@ use o63::carddav::error::ProxyError;
 use o63::carddav::server_handler_proxy::ProxyHandler;
 use o63::config::permission::reject_loose_permissions;
 use o63::config::{ConfigError, TlsSettings};
-use o63::webdav::actix_server::dav_service;
+use o63::webdav::actix_server::{
+    DavServiceConfig, DavServiceConfigBuilder, dav_service_with_config,
+};
 use o63::webdav::auth::BasicAuth;
 use o63::webdav::client::{Credentials, DavClient};
 use std::net::SocketAddr;
@@ -36,12 +38,17 @@ pub fn run(arg_matches: &ArgMatches) -> Result<(), CliError> {
         password: proxy.downstream.password.clone(),
     };
 
+    let service_config = DavServiceConfigBuilder::new()
+        .dangerous_allow_acl_passthrough(proxy.downstream.dangerous_allow_acl_passthrough)
+        .read_only(proxy.downstream.read_only)
+        .build();
+
     let server_config = ProxyServerConfig {
         listen: proxy.downstream.listen,
         upstream: proxy.upstream.url,
         upstream_credentials,
         downstream_credentials,
-        dangerous_allow_acl_passthrough: proxy.downstream.dangerous_allow_acl_passthrough,
+        service_config,
         tls: proxy.downstream.tls,
     };
 
@@ -57,7 +64,7 @@ struct ProxyServerConfig {
     upstream: reqwest::Url,
     upstream_credentials: Credentials,
     downstream_credentials: Credentials,
-    dangerous_allow_acl_passthrough: bool,
+    service_config: DavServiceConfig,
     tls: Option<TlsSettings>,
 }
 
@@ -70,14 +77,15 @@ async fn run_proxy(config: ProxyServerConfig) -> Result<(), ProxyError> {
 
     let dav = DavClient::new(config.upstream).with_credentials(config.upstream_credentials);
     let client = CarddavClient::new(dav);
-    let handler = ProxyHandler::new_with_acl(client, config.dangerous_allow_acl_passthrough);
+    let handler = ProxyHandler::new(client);
+    let service_config = config.service_config;
 
     let auth = BasicAuth::new(config.downstream_credentials.clone());
 
     let server = HttpServer::new(move || {
         App::new()
             .wrap(auth.clone())
-            .service(dav_service(handler.clone()))
+            .service(dav_service_with_config(handler.clone(), service_config))
     });
 
     let server = match &config.tls {

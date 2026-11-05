@@ -115,6 +115,8 @@ pub enum ConfigError {
     NonLoopbackWithoutTls(std::net::SocketAddr),
     #[error("invalid TLS configuration: {0}")]
     InvalidTls(String),
+    #[error("contradictory proxy settings: {0}")]
+    ContradictoryProxySettings(String),
 }
 
 pub fn load(files: &[PathBuf]) -> Result<Config, ConfigError> {

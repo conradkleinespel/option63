@@ -59,12 +59,6 @@ pub trait DavHandler: Send + Sync + 'static {
         }
     }
 
-    /// Whether the server accepts `ACL` (RFC 3744). When false, ACL requests
-    /// are refused and `ACL` is not advertised in the OPTIONS `Allow` header.
-    fn acl_enabled(&self) -> bool {
-        true
-    }
-
     async fn propfind(
         &self,
         path: &str,
